@@ -8,9 +8,13 @@
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1bXVyb3pzaW1venlwYWpuY3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyODE3NzUsImV4cCI6MjA3MDg1Nzc3NX0.uAvgWY1HMvrSGNLaYjaFUQEh5wC8YlfNTRV5J79HVEQ";
     window.supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
+
+  <!-- Chart.js para o Dashboard -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SuperFrio – Controle de Carga (arquivo único)</title>
+  <title>SuperFrio – Controle de Carga</title>
   <style>
     :root{
       --bg:#f3f7fb;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;
@@ -54,20 +58,19 @@
   <div class="brandbar">
     <div class="row">
       <div class="logo">
-        <!-- SUBSTITUA PELO SEU BASE64 REAL -->
+        <!-- Substitua pelo base64 real da sua logo, se quiser -->
         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..." alt="SuperFrio logo"/>
         <div>
           <h1>SuperFrio – Controle de Carga</h1>
           <p class="tagline">Logística Frigorificada • Carregamento & Descarregamento</p>
         </div>
       </div>
-     <nav>
-  <button id="tab-novo" class="active">Novo</button>
-  <button id="tab-editar">Editar</button>
-  <button id="tab-pesquisar">Pesquisar</button>
-  <button id="tab-dash">Dashboard</button>
-</nav>
-
+      <nav>
+        <button id="tab-novo" class="active">Novo</button>
+        <button id="tab-editar">Editar</button>
+        <button id="tab-pesquisar">Pesquisar</button>
+        <button id="tab-dash">Dashboard</button>
+      </nav>
     </div>
   </div>
 
@@ -200,6 +203,43 @@
         </table>
       </div>
     </section>
+
+    <!-- DASHBOARD -->
+    <section id="page-dash" class="card hide">
+      <div class="row" style="justify-content:space-between">
+        <h3 style="margin:0">Dashboard</h3>
+        <div class="row">
+          <div>
+            <label>De</label>
+            <input type="date" id="dash-de">
+          </div>
+          <div>
+            <label>Até</label>
+            <input type="date" id="dash-ate">
+          </div>
+          <button class="btn" id="dash-atualizar" style="align-self:flex-end">Atualizar</button>
+        </div>
+      </div>
+
+      <div class="grid g3" style="margin-top:10px">
+        <div class="card" style="border:1px solid var(--border)">
+          <div class="muted">Paletes enviados</div>
+          <div style="font-size:28px;font-weight:700" id="kpi-enviados">0</div>
+        </div>
+        <div class="card" style="border:1px solid var(--border)">
+          <div class="muted">Paletes recebidos</div>
+          <div style="font-size:28px;font-weight:700" id="kpi-recebidos">0</div>
+        </div>
+        <div class="card" style="border:1px solid var(--border)">
+          <div class="muted">Quebra</div>
+          <div style="font-size:28px;font-weight:700;color:var(--danger)" id="kpi-quebra">0</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:10px">
+        <canvas id="dash-chart" height="120"></canvas>
+      </div>
+    </section>
   </div>
 
   <script>
@@ -209,14 +249,20 @@
     const tabs={
       novo:{btn:$('tab-novo'),page:$('page-novo')},
       editar:{btn:$('tab-editar'),page:$('page-editar')},
-      pesq:{btn:$('tab-pesquisar'),page:$('page-pesquisar')}
+      pesq:{btn:$('tab-pesquisar'),page:$('page-pesquisar')},
+      dash:{btn:$('tab-dash'),page:$('page-dash')}
     };
     function activate(t){
       Object.values(tabs).forEach(x=>{x.btn.classList.remove('active');x.page.classList.add('hide');});
       t.btn.classList.add('active'); t.page.classList.remove('hide');
     }
+    Object.values(tabs).forEach(t=> t.btn.addEventListener('click', async ()=>{
+      if(t===tabs.novo) resetNovoForm();
+      activate(t);
+      if(t===tabs.dash) await loadDashboard();
+    }));
 
-    // Geração do ID do documento
+    // Geração do ID do documento (ANO + MES + DIA + 2 letras)
     function genDocId(date = new Date()){
       const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
       const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -233,7 +279,6 @@
     let novo = newDocData();
 
     function resetNovoForm(){ novo=newDocData(); renderNovo(); ensureDefaultsNovo(); }
-    Object.values(tabs).forEach(t=> t.btn.addEventListener('click', ()=>{ if(t===tabs.novo) resetNovoForm(); activate(t); }));
 
     // --------- STORAGE: SUPABASE ---------
     async function saveDoc(doc){
@@ -349,7 +394,7 @@
       hookNovoRow(id); updateNovoTotals();
     });
 
-    function ensureDefaultsNovo(){ if(novo.itens.length===0){ const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''}); renderNovo(); } }
+    // Inputs topo (Novo)
     ['novo-data','novo-origem','novo-destino','novo-placa','novo-motorista','novo-conf-origem','novo-conf-destino','novo-obs'].forEach(id=>{
       $(id).addEventListener('input', e=>{
         const v=e.target.value; if(id==='novo-data') novo.data=v;
@@ -370,7 +415,8 @@
     // EDITAR
     let editing=null;
     $('editar-abrir').addEventListener('click', async ()=>{
-      const id=$('editar-id').value.trim(); const doc=await getDoc(id);
+      const id=$('editar-id').value.trim();
+      const doc=await getDoc(id);
       if(!doc){alert('Documento não encontrado.'); return;}
       editing=doc; $('editar-form').classList.remove('hide'); renderEditar();
     });
@@ -465,9 +511,84 @@
         tb.appendChild(tr);
       });
       tb.querySelectorAll('button[data-open]').forEach(b=> b.addEventListener('click', async (e)=>{
-        const id=e.target.getAttribute('data-open'); $('tab-editar').click(); $('editar-id').value=id; await $('editar-abrir').click();
+        const id=e.target.getAttribute('data-open');
+        tabs.editar.btn.click();
+        $('editar-id').value = id;
+        // chama a mesma rotina do abrir
+        const doc = await getDoc(id);
+        if(!doc){ alert('Documento não encontrado.'); return; }
+        editing = doc; $('editar-form').classList.remove('hide'); renderEditar();
       }));
     }
+
+    // DASHBOARD
+    let dashChart = null;
+
+    function sumFromDocs(docs){
+      let enviados = 0, recebidos = 0, quebra = 0;
+      const porDia = {}; // { 'yyyy-mm-dd': {env, rec, qbr} }
+
+      for(const d of docs){
+        const dataDia = d.data || 'SemData';
+        if(!porDia[dataDia]) porDia[dataDia] = {env:0, rec:0, qbr:0};
+        const itens = (d.payload && d.payload.itens) ? d.payload.itens : [];
+        for(const it of itens){
+          const q = Number(it.qtd||0);
+          const r = Number(it.recebida||0);
+          enviados += q;
+          recebidos += r;
+          const qbr = Math.max(0, q - r);
+          quebra += qbr;
+
+          porDia[dataDia].env += q;
+          porDia[dataDia].rec += r;
+          porDia[dataDia].qbr += qbr;
+        }
+      }
+      return {enviados, recebidos, quebra, porDia};
+    }
+
+    async function loadDashboard(){
+      const de  = $('dash-de').value;
+      const ate = $('dash-ate').value;
+
+      let q = supa.from('docs').select('data,payload').order('data', {ascending:true});
+      if(de)  q = q.gte('data', de);
+      if(ate) q = q.lte('data', ate);
+      const { data, error } = await q;
+      if(error){ console.error(error); alert('Erro ao carregar dashboard: '+error.message); return; }
+
+      const agg = sumFromDocs(data);
+      $('kpi-enviados').textContent = agg.enviados;
+      $('kpi-recebidos').textContent = agg.recebidos;
+      $('kpi-quebra').textContent   = agg.quebra;
+
+      const dias = Object.keys(agg.porDia).sort();
+      const serieEnv = dias.map(d=>agg.porDia[d].env);
+      const serieRec = dias.map(d=>agg.porDia[d].rec);
+      const serieQbr = dias.map(d=>agg.porDia[d].qbr);
+
+      const ctx = document.getElementById('dash-chart').getContext('2d');
+      if(dashChart) { dashChart.destroy(); }
+      dashChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: dias,
+          datasets: [
+            { label: 'Enviados',  data: serieEnv },
+            { label: 'Recebidos', data: serieRec },
+            { label: 'Quebra',    data: serieQbr }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'top' } },
+          interaction: { mode:'index', intersect:false },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+    document.getElementById('dash-atualizar')?.addEventListener('click', loadDashboard);
 
     // Inicialização
     function ensureDefaultsNovo(){ if(novo.itens.length===0){ const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''}); renderNovo(); } }
@@ -482,37 +603,5 @@
       alert(error ? ('Erro: ' + error.message) : ('OK! Conectou. Linhas lidas: ' + (data?.length ?? 0)));
     });
   </script>
-<!-- Botão temporário para migrar registros antigos do localStorage para o Supabase -->
-<button id="btnImportLocal" style="position:fixed;left:12px;bottom:12px;z-index:9999">
-  Importar docs deste navegador
-</button>
-<script>
-  document.getElementById('btnImportLocal').addEventListener('click', async ()=>{
-    const prefix = 'SUPERFRIO:DOC:';
-    let ok = 0, fail = 0;
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith(prefix)) {
-        try {
-          const doc = JSON.parse(localStorage.getItem(k));
-          const row = {
-            id: doc.id,
-            data: doc.data || null,
-            placa: doc.placa || null,
-            motorista: doc.motorista || null,
-            status: doc.status || null,
-            payload: doc
-          };
-          const { error } = await supa.from('docs').upsert(row);
-          if (error) { console.error(error); fail++; }
-          else { ok++; }
-        } catch (e) { console.error(e); fail++; }
-      }
-    }
-    alert(`Importação concluída.\nEnviados com sucesso: ${ok}\nFalhas: ${fail}`);
-  });
-</script>
 </body>
 </html>
-
-
