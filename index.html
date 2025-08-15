@@ -480,5 +480,36 @@
       alert(error ? ('Erro: ' + error.message) : ('OK! Conectou. Linhas lidas: ' + (data?.length ?? 0)));
     });
   </script>
+<!-- Botão temporário para migrar registros antigos do localStorage para o Supabase -->
+<button id="btnImportLocal" style="position:fixed;left:12px;bottom:12px;z-index:9999">
+  Importar docs deste navegador
+</button>
+<script>
+  document.getElementById('btnImportLocal').addEventListener('click', async ()=>{
+    const prefix = 'SUPERFRIO:DOC:';
+    let ok = 0, fail = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(prefix)) {
+        try {
+          const doc = JSON.parse(localStorage.getItem(k));
+          const row = {
+            id: doc.id,
+            data: doc.data || null,
+            placa: doc.placa || null,
+            motorista: doc.motorista || null,
+            status: doc.status || null,
+            payload: doc
+          };
+          const { error } = await supa.from('docs').upsert(row);
+          if (error) { console.error(error); fail++; }
+          else { ok++; }
+        } catch (e) { console.error(e); fail++; }
+      }
+    }
+    alert(`Importação concluída.\nEnviados com sucesso: ${ok}\nFalhas: ${fail}`);
+  });
+</script>
 </body>
 </html>
+
