@@ -441,6 +441,17 @@ function renderSearch(rows){
 function ensureDefaultsNovo(){ if(novo.itens.length===0){ const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''}); renderNovo(); } }
 resetNovoForm();
 </script>
+<!-- Botão de teste da conexão -->
+<button id="btnTest" style="position:fixed;right:12px;bottom:12px;z-index:9999">
+  Testar conexão
+</button>
+<script>
+  document.getElementById('btnTest').addEventListener('click', async () => {
+    const { data, error } = await supa.from('docs').select('id').limit(1);
+    alert(error ? ('Erro: ' + error.message) : ('OK! Conectou. Linhas lidas: ' + (data?.length ?? 0)));
+  });
+</script>
 </body>
 </html>
+
 
