@@ -9,8 +9,9 @@
     window.supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
 
-  <!-- Chart.js -->
+  <!-- Chart.js + plugin de data labels -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -27,15 +28,18 @@
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif}
     .wrap{max-width:1100px;margin:0 auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:14px}
+
     .brandbar{background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%);padding:14px 18px;color:#fff;border-bottom:1px solid #dbeafe;box-shadow:0 6px 20px rgba(10,111,185,.15);}
     .brandbar .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between}
     .logo{display:flex;align-items:center;gap:12px}
     .logo img{height:38px;width:auto;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));background:transparent}
     .logo h1{margin:0;font-size:20px;letter-spacing:.3px;font-weight:700}
     .tagline{margin:0;font-size:12px;opacity:.9;letter-spacing:.2px}
+
     nav{display:flex;gap:10px;flex-wrap:wrap}
     nav button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;backdrop-filter:blur(2px);}
     nav button.active{background:#fff;color:var(--primary-dark);border-color:#fff}
+
     .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
     label{display:block;font-size:13px;margin-bottom:6px;color:#0f172a}
     input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;outline:none;box-shadow:0 0 0 0 rgba(0,0,0,0);}
@@ -47,15 +51,17 @@
     .btn.ghost{background:#fff;color:var(--primary-dark);border:1px solid var(--primary-dark)}
     .btn.danger{background:var(--danger)}
     .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
+
     table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid var(--border);background:#fff;text-align:left;font-size:14px}
     th{background:#eff6ff;color:#0b3b66}
     tr:last-child td{border-bottom:none}
+
     .muted{color:var(--muted);font-size:12px}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .hide{display:none !important}
 
-    /* KPI CARDS */
+    /* KPI CARDS coloridos */
     .kpis{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
     .kpi{border-radius:12px;padding:16px;border:1px solid var(--border);background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.04)}
     .kpi--blue{background:linear-gradient(180deg,var(--info-100),#fff) !important;border-color:var(--info-300) !important}
@@ -64,8 +70,16 @@
     .kpi .title{color:var(--muted);font-size:13px;margin-bottom:8px}
     .kpi .value{font-size:30px;font-weight:800}
 
+    /* Tamanhos/estilos dos gráficos */
+    .chart-card{display:flex;justify-content:center;align-items:center}
+    .chart-sm{max-width:340px;max-height:340px;margin:0 auto;display:block;}
+
     /* Responsivo */
-    @media (max-width:860px){.g3{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.kpis{grid-template-columns:1fr}}
+    @media (max-width:860px){
+      .g3{grid-template-columns:1fr}
+      .g2{grid-template-columns:1fr}
+      .kpis{grid-template-columns:1fr}
+    }
     @media print{.brandbar,nav,.actions,.muted,.hide-on-print{display:none!important};.wrap{gap:6px;padding:0 10px}}
   </style>
 </head>
@@ -73,7 +87,8 @@
   <div class="brandbar">
     <div class="row">
       <div class="logo">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..." alt="SuperFrio logo"/>
+        <!-- Use sua imagem/base64 real aqui -->
+        <img src="https://dummyimage.com/140x38/148cd6/ffffff&text=SuperFrio" alt="SuperFrio logo"/>
         <div>
           <h1>SuperFrio – Controle de Carga</h1>
           <p class="tagline">Logística Frigorificada • Carregamento & Descarregamento</p>
@@ -254,9 +269,13 @@
         <canvas id="dash-chart" height="120"></canvas>
       </div>
 
-      <div class="card" style="margin-top:10px">
-        <h4 style="margin:0 0 8px 0">Status dos documentos</h4>
-        <canvas id="status-chart" height="110"></canvas>
+      <div class="card chart-card" style="margin-top:10px">
+        <div style="width:100%;display:flex;justify-content:center">
+          <div style="width:100%;max-width:380px">
+            <h4 style="margin:0 0 8px 0;text-align:center">Status dos documentos</h4>
+            <canvas id="status-chart" class="chart-sm"></canvas>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -605,7 +624,7 @@
         }
       });
 
-      // Pizza de status (cores fixas)
+      // Pizza de status (menor + rótulos)
       const counts = statusCounts(data);
       const sctx = document.getElementById('status-chart').getContext('2d');
       if(statusChart) statusChart.destroy();
@@ -626,9 +645,23 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: true,
           cutout: '60%',
-          plugins: { legend: { position: 'bottom' } }
-        }
+          plugins: {
+            legend: { position: 'bottom' },
+            datalabels: {
+              color: '#111827',
+              font: { weight:'700' },
+              formatter: (value, ctx) => {
+                const data = ctx.chart.data.datasets[0].data;
+                const total = data.reduce((a,b)=>a+b,0) || 1;
+                const pct = (value*100/total).toFixed(0) + '%';
+                return value ? pct : '';
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
       });
     }
     $('dash-atualizar')?.addEventListener('click', loadDashboard);
