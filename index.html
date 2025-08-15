@@ -58,7 +58,7 @@
   <div class="brandbar">
     <div class="row">
       <div class="logo">
-        <!-- Substitua pelo base64 real da sua logo, se quiser -->
+        <!-- Substitua pelo base64 da sua logo, se quiser -->
         <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..." alt="SuperFrio logo"/>
         <div>
           <h1>SuperFrio – Controle de Carga</h1>
@@ -257,9 +257,10 @@
       t.btn.classList.add('active'); t.page.classList.remove('hide');
     }
     Object.values(tabs).forEach(t=> t.btn.addEventListener('click', async ()=>{
+      const isDash = (t===tabs.dash);
+      activate(t);                  // mostra a página primeiro
       if(t===tabs.novo) resetNovoForm();
-      activate(t);
-      if(t===tabs.dash) await loadDashboard();
+      if(isDash) await loadDashboard(); // só carrega o chart depois da aba ficar visível
     }));
 
     // Geração do ID do documento (ANO + MES + DIA + 2 letras)
@@ -514,7 +515,6 @@
         const id=e.target.getAttribute('data-open');
         tabs.editar.btn.click();
         $('editar-id').value = id;
-        // chama a mesma rotina do abrir
         const doc = await getDoc(id);
         if(!doc){ alert('Documento não encontrado.'); return; }
         editing = doc; $('editar-form').classList.remove('hide'); renderEditar();
@@ -593,15 +593,6 @@
     // Inicialização
     function ensureDefaultsNovo(){ if(novo.itens.length===0){ const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''}); renderNovo(); } }
     resetNovoForm();
-  </script>
-
-  <!-- Botão de teste da conexão (remova depois) -->
-  <button id="btnTest" style="position:fixed;right:12px;bottom:12px;z-index:9999">Testar conexão</button>
-  <script>
-    document.getElementById('btnTest').addEventListener('click', async ()=>{
-      const { data, error } = await supa.from('docs').select('id').limit(1);
-      alert(error ? ('Erro: ' + error.message) : ('OK! Conectou. Linhas lidas: ' + (data?.length ?? 0)));
-    });
   </script>
 </body>
 </html>
