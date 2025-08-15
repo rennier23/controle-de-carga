@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://humurozsimozypajncsv.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1bXVyb3pzaW1venlwYWpuY3N2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyODE3NzUsImV4cCI6MjA3MDg1Nzc3NX0.uAvgWY1HMvrSGNLaYjaFUQEh5wC8YlfNTRV5J79HVEQ";
+  window.supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SuperFrio – Controle de Carga (arquivo único)</title>
@@ -436,3 +443,4 @@ resetNovoForm();
 </script>
 </body>
 </html>
+
