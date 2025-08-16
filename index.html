@@ -300,13 +300,13 @@
     // Tabs
     const tabs={novo:{btn:$('tab-novo'),page:$('page-novo')},
                 editar:{btn:$('tab-editar'),page:$('page-editar')},
-                pesq:{btn:$('tab-pesquisar'),page:$('page-pesquisar')},
+                pesq:{btn:$('page-pesquisar')?$('tab-pesquisar'):null,page:$('page-pesquisar')},
                 dash:{btn:$('tab-dash'),page:$('page-dash')}};
     function activate(t){
-      Object.values(tabs).forEach(x=>{x.btn.classList.remove('active');x.page.classList.add('hide');});
+      Object.values(tabs).forEach(x=>{ if(!x) return; x.btn.classList.remove('active');x.page.classList.add('hide');});
       t.btn.classList.add('active'); t.page.classList.remove('hide');
     }
-    Object.values(tabs).forEach(t=> t.btn.addEventListener('click', async ()=>{
+    Object.values(tabs).forEach(t=> t && t.btn.addEventListener('click', async ()=>{
       activate(t);
       if(t===tabs.novo) resetNovoForm();
       if(t===tabs.dash) await loadDashboard();
@@ -681,7 +681,26 @@
       const dias=Object.keys(agg.porDia).sort();
       const serieEnv=dias.map(d=>agg.porDia[d].env), serieRec=dias.map(d=>agg.porDia[d].rec), serieQbr=dias.map(d=>agg.porDia[d].qbr);
       const ctx=document.getElementById('dash-chart').getContext('2d'); if(dashChart) dashChart.destroy();
-      dashChart=new Chart(ctx,{type:'line',data:{labels:dias,datasets:[{label:'Enviados',data:serieEnv},{label:'Recebidos',data:serieRec},{label:'Quebra',data:serieQbr}]},options:{responsive:true,plugins:{legend:{position:'top'}},interaction:{mode:'index',intersect:false},scales:{y:{beginAtZero:true}}}});
+
+      /* ====== GRÁFICO COM LINHAS SUAVES E MONOTÔNICAS ====== */
+      dashChart=new Chart(ctx,{
+        type:'line',
+        data:{
+          labels:dias,
+          datasets:[
+            { label:'Enviados', data:serieEnv, borderColor:'#148CD6', backgroundColor:'rgba(20,140,214,0.10)', tension:0.4, cubicInterpolationMode:'monotone' },
+            { label:'Recebidos', data:serieRec, borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,0.10)',  tension:0.4, cubicInterpolationMode:'monotone' },
+            { label:'Quebra',    data:serieQbr, borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,0.10)',  tension:0.4, cubicInterpolationMode:'monotone' }
+          ]
+        },
+        options:{
+          responsive:true,
+          plugins:{ legend:{position:'top'} },
+          interaction:{mode:'index',intersect:false},
+          scales:{ y:{ beginAtZero:true } }
+        }
+      });
+      /* ===================================================== */
 
       const tb=document.querySelector('#dash-table tbody'); tb.innerHTML='';
       for(const d of data){
