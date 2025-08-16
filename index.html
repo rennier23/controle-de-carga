@@ -59,6 +59,13 @@
       color:#fff;
       border:1px solid var(--danger);
     }
+
+    /* Garante que o botão de remover documento (editar-remover) seja vermelho mesmo sem classe danger */
+    #editar-remover{
+      background:var(--danger) !important;
+      color:#fff !important;
+      border:1px solid var(--danger) !important;
+    }
     .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
 
     table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
@@ -184,7 +191,8 @@
       <div class="row">
         <input id="editar-id" placeholder="Digite nº do documento…"/>
         <button class="btn" id="editar-abrir"><i class="fa-solid fa-folder-open"></i> Abrir</button>
-        <button class="btn ghost" id="editar-remover"><i class="fa-solid fa-trash"></i> Excluir</button>
+        <!-- Botão de exclusão em vermelho -->
+        <button class="btn danger" id="editar-remover"><i class="fa-solid fa-trash"></i> Excluir</button>
       </div>
 
       <div id="editar-form" class="hide">
