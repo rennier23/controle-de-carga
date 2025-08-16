@@ -9,7 +9,7 @@
     window.supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
 
-  <!-- Chart.js (para o gráfico de linha do dashboard) -->
+  <!-- Chart.js p/ linha do dashboard -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
   <meta charset="utf-8"/>
@@ -19,10 +19,8 @@
     :root{
       --bg:#f3f7fb;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;
       --primary:#148CD6;--primary-dark:#0A6FB9;--danger:#dc2626;--ring: rgba(20,140,214,.35);
-      --ok:#16a34a;--ok-100:#dcfce7;--ok-300:#86efac;
-      --info:#0ea5e9;--info-100:#e0f2fe;--info-300:#7dd3fc;
-      --warn:#f59e0b;--warn-100:#fef3c7;--warn-300:#fcd34d;
-      --err:#ef4444;--err-100:#fee2e2;--err-300:#fca5a5;
+      --ok:#16a34a;--ok-100:#dcfce7;--ok-300:#86efac;--info:#0ea5e9;--info-100:#e0f2fe;--info-300:#7dd3fc;
+      --warn:#f59e0b;--warn-100:#fef3c7;--warn-300:#fcd34d;--err:#ef4444;--err-100:#fee2e2;--err-300:#fca5a5;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif}
@@ -50,25 +48,31 @@
     .btn.ghost{background:#fff;color:var(--primary-dark);border:1px solid var(--primary-dark)}
     .btn.danger{background:var(--danger)}
     .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
+    .muted{color:var(--muted);font-size:12px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .hide{display:none !important}
 
     table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid var(--border);background:#fff;text-align:left;font-size:14px}
     th{background:#eff6ff;color:#0b3b66}
     tr:last-child td{border-bottom:none}
-
     .table-wrap{overflow:auto}
-    .muted{color:var(--muted);font-size:12px}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .hide{display:none !important}
 
-    /* KPI CARDS coloridos */
+    /* KPI cards */
     .kpis{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
     .kpi{border-radius:12px;padding:16px;border:1px solid var(--border);background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.04)}
-    .kpi--blue{background:linear-gradient(180deg,var(--info-100),#fff) !important;border-color:var(--info-300) !important}
-    .kpi--green{background:linear-gradient(180deg,var(--ok-100),#fff) !important;border-color:var(--ok-300) !important}
-    .kpi--red{background:linear-gradient(180deg,var(--err-100),#fff) !important;border-color:var(--err-300) !important}
+    .kpi--blue{background:linear-gradient(180deg,var(--info-100),#fff) !important;border-color:var(--info-300)!important}
+    .kpi--green{background:linear-gradient(180deg,var(--ok-100),#fff)!important;border-color:var(--ok-300)!important}
+    .kpi--red{background:linear-gradient(180deg,var(--err-100),#fff)!important;border-color:var(--err-300)!important}
     .kpi .title{color:var(--muted);font-size:13px;margin-bottom:8px}
     .kpi .value{font-size:30px;font-weight:800}
+
+    /* Fotos */
+    .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+    .thumb{position:relative;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
+    .thumb img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:1/1}
+    .thumb button{position:absolute;top:6px;right:6px;background:#fff;color:#111;border:1px solid var(--border);border-radius:8px;padding:4px 7px;font-size:12px;cursor:pointer}
+    .thumb a{position:absolute;left:6px;bottom:6px;background:#ffffffd9;border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:11px;text-decoration:none;color:#0b3b66}
 
     @media (max-width:860px){
       .g3{grid-template-columns:1fr}
@@ -129,6 +133,15 @@
         <div class="g2" style="grid-column:1/-1"><label>Observações</label><input id="novo-obs"/></div>
       </div>
 
+      <!-- Fotos (NOVO) -->
+      <h3 style="margin-top:12px">Fotos</h3>
+      <div class="actions">
+        <input id="novo-file" type="file" accept="image/*" capture="environment" multiple class="hide"/>
+        <button class="btn" id="novo-add-foto">Adicionar foto</button>
+        <span class="muted">Dica: no celular, abre a câmera.</span>
+      </div>
+      <div id="novo-fotos" class="photo-grid" style="margin-top:8px"></div>
+
       <h3 style="margin-top:12px">Carregamento</h3>
       <table id="novo-carreg">
         <thead><tr><th>Descrição</th><th>Qtd (pallets)</th><th>Observações</th><th class="hide-on-print"></th></tr></thead>
@@ -157,6 +170,7 @@
         <button class="btn" id="editar-abrir">Abrir</button>
         <button class="btn ghost" id="editar-remover">Excluir</button>
       </div>
+
       <div id="editar-form" class="hide">
         <div class="row" style="justify-content:space-between;margin-top:8px">
           <div class="pill">Documento: <b id="editar-doc"></b> • Status: <b id="editar-status"></b></div>
@@ -185,6 +199,14 @@
           <div><label>Conferente (carregamento)</label><input id="ed-conf-origem"/></div>
           <div class="g2" style="grid-column:1/-1"><label>Observações</label><input id="ed-obs"/></div>
         </div>
+
+        <!-- Fotos (EDITAR) -->
+        <h3 style="margin-top:12px">Fotos</h3>
+        <div class="actions">
+          <input id="ed-file" type="file" accept="image/*" capture="environment" multiple class="hide"/>
+          <button class="btn" id="ed-add-foto">Adicionar foto</button>
+        </div>
+        <div id="ed-fotos" class="photo-grid" style="margin-top:8px"></div>
 
         <h3 style="margin-top:12px">Carregamento</h3>
         <table id="ed-carreg">
@@ -245,42 +267,24 @@
       </div>
 
       <div class="kpis" style="margin-top:10px">
-        <div class="kpi kpi--blue">
-          <div class="title">Paletes enviados</div>
-          <div class="value" id="kpi-enviados">0</div>
-        </div>
-        <div class="kpi kpi--green">
-          <div class="title">Paletes recebidos</div>
-          <div class="value" id="kpi-recebidos">0</div>
-        </div>
-        <div class="kpi kpi--red">
-          <div class="title">Quebra</div>
-          <div class="value" id="kpi-quebra">0</div>
-        </div>
+        <div class="kpi kpi--blue"><div class="title">Paletes enviados</div><div class="value" id="kpi-enviados">0</div></div>
+        <div class="kpi kpi--green"><div class="title">Paletes recebidos</div><div class="value" id="kpi-recebidos">0</div></div>
+        <div class="kpi kpi--red"><div class="title">Quebra</div><div class="value" id="kpi-quebra">0</div></div>
       </div>
 
-      <div class="card" style="margin-top:10px">
-        <canvas id="dash-chart" height="120"></canvas>
-      </div>
+      <div class="card" style="margin-top:10px"><canvas id="dash-chart" height="120"></canvas></div>
 
-      <!-- TABELA DETALHES -->
       <div class="card" style="margin-top:10px">
         <h4 style="margin:0 0 8px 0">Detalhes por documento</h4>
         <div class="table-wrap">
           <table id="dash-table">
             <thead>
               <tr>
-                <th>Data</th>
-                <th>Placa</th>
-                <th>Motorista</th>
-                <th>Paletes enviados</th>
-                <th>Paletes recebidos</th>
-                <th>Conferente 1</th>
-                <th>Conferente 2</th>
-                <th>Status</th>
+                <th>Data</th><th>Placa</th><th>Motorista</th>
+                <th>Paletes enviados</th><th>Paletes recebidos</th>
+                <th>Conferente 1</th><th>Conferente 2</th><th>Status</th>
               </tr>
-            </thead>
-            <tbody></tbody>
+            </thead><tbody></tbody>
           </table>
         </div>
       </div>
@@ -290,47 +294,41 @@
   <script>
     const $ = (id)=>document.getElementById(id);
 
-    // Abas
-    const tabs={
-      novo:{btn:$('tab-novo'),page:$('page-novo')},
-      editar:{btn:$('tab-editar'),page:$('page-editar')},
-      pesq:{btn:$('tab-pesquisar'),page:$('page-pesquisar')},
-      dash:{btn:$('tab-dash'),page:$('page-dash')}
-    };
+    // Tabs
+    const tabs={novo:{btn:$('tab-novo'),page:$('page-novo')},
+                editar:{btn:$('tab-editar'),page:$('page-editar')},
+                pesq:{btn:$('tab-pesquisar'),page:$('page-pesquisar')},
+                dash:{btn:$('tab-dash'),page:$('page-dash')}};
     function activate(t){
       Object.values(tabs).forEach(x=>{x.btn.classList.remove('active');x.page.classList.add('hide');});
       t.btn.classList.add('active'); t.page.classList.remove('hide');
     }
     Object.values(tabs).forEach(t=> t.btn.addEventListener('click', async ()=>{
-      const isDash = (t===tabs.dash);
       activate(t);
       if(t===tabs.novo) resetNovoForm();
-      if(isDash) await loadDashboard();
+      if(t===tabs.dash) await loadDashboard();
     }));
 
-    // ID do documento
+    // Util
     function genDocId(date = new Date()){
-      const y = date.getFullYear(), m = date.getMonth()+1, d = date.getDate();
+      const y=date.getFullYear(), m=date.getMonth()+1, d=date.getDate();
       const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let a=L[Math.floor(Math.random()*26)], b=L[Math.floor(Math.random()*26)];
       while(a===b) b=L[Math.floor(Math.random()*26)];
       return `${y}${m}${d}${a}${b}`;
     }
 
-    // Estado NOVO
+    // Estado "novo"
     function newDocData(){
       return {id:genDocId(), status:'Em trânsito', data:new Date().toISOString().slice(0,10),
-        origem:'RJ', destino:'', placa:'', motorista:'', confOrigem:'', confDestino:'', obs:'', itens:[]};
+        origem:'RJ', destino:'', placa:'', motorista:'', confOrigem:'', confDestino:'', obs:'', itens:[], photos:[]};
     }
     let novo = newDocData();
     function resetNovoForm(){ novo=newDocData(); renderNovo(); ensureDefaultsNovo(); }
 
-    // --------- Supabase I/O ---------
+    // ---- Supabase CRUD ----
     async function saveDoc(doc){
-      const row = {
-        id: doc.id, data: doc.data || null, placa: doc.placa || null,
-        motorista: doc.motorista || null, status: doc.status || null, payload: doc
-      };
+      const row = { id:doc.id, data:doc.data||null, placa:doc.placa||null, motorista:doc.motorista||null, status:doc.status||null, payload:doc };
       const { error } = await supa.from('docs').upsert(row);
       if(error){ console.error(error); alert('Erro ao salvar: '+error.message); }
       else { alert('Salvo! Nº '+doc.id); }
@@ -345,18 +343,50 @@
       if(error){ console.error(error); alert('Erro ao excluir: '+error.message); }
       else { alert('Excluído.'); }
     }
-    async function allDocs(filters = {}){
-      let q = supa.from('docs').select('id,data,placa,motorista,status').order('data',{ascending:false});
-      if(filters.id)        q = q.ilike('id', `%${filters.id}%`);
-      if(filters.placa)     q = q.ilike('placa', `%${filters.placa}%`);
-      if(filters.motorista) q = q.ilike('motorista', `%${filters.motorista}%`);
+    async function allDocs(filters={}){
+      let q=supa.from('docs').select('id,data,placa,motorista,status,payload').order('data',{ascending:false});
+      if(filters.id) q=q.ilike('id', `%${filters.id}%`);
+      if(filters.placa) q=q.ilike('placa', `%${filters.placa}%`);
+      if(filters.motorista) q=q.ilike('motorista', `%${filters.motorista}%`);
       const { data, error } = await q;
       if(error){ console.error(error); alert('Erro ao listar: '+error.message); return []; }
       return data;
     }
-    // --------------------------------
 
-    // NOVO
+    // ---- Upload/remoção de fotos (Storage) ----
+    const BUCKET = 'fotos'; // bucket público
+    function ts(){ return new Date().toISOString().replace(/[:.]/g,'-'); }
+
+    function blobFromCanvas(img, max=1280, quality=0.85){
+      const canvas=document.createElement('canvas');
+      const ratio=Math.min(max/img.width, max/img.height, 1);
+      canvas.width=Math.round(img.width*ratio);
+      canvas.height=Math.round(img.height*ratio);
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      return new Promise(res=> canvas.toBlob(b=>res(b),'image/jpeg',quality));
+    }
+    async function compressFile(file){
+      const url=URL.createObjectURL(file);
+      const img=new Image();
+      await new Promise(ok=>{ img.onload=ok; img.src=url; });
+      const blob=await blobFromCanvas(img,1280,0.85);
+      URL.revokeObjectURL(url);
+      return blob;
+    }
+    async function uploadPhoto(docId, file){
+      const blob=await compressFile(file);
+      const path=`${docId}/${ts()}.jpg`;
+      const { error } = await supa.storage.from(BUCKET).upload(path, blob, {contentType:'image/jpeg', upsert:false});
+      if(error) throw error;
+      const { data } = supa.storage.from(BUCKET).getPublicUrl(path);
+      return { url:data.publicUrl, path };
+    }
+    async function deletePhoto(path){
+      await supa.storage.from(BUCKET).remove([path]);
+    }
+
+    // NOVO: render / handlers
     function renderNovo(){
       $('novo-doc').textContent=novo.id; $('novo-status').textContent=novo.status;
       $('novo-numdoc').value=novo.id; $('novo-data').value=novo.data||'';
@@ -365,6 +395,22 @@
       $('novo-placa').value=novo.placa||''; $('novo-motorista').value=novo.motorista||'';
       $('novo-conf-origem').value=novo.confOrigem||''; $('novo-conf-destino').value=novo.confDestino||''; $('novo-obs').value=novo.obs||'';
 
+      // fotos
+      const wrap=$('novo-fotos'); wrap.innerHTML='';
+      (novo.photos||[]).forEach((ph,i)=>{
+        const el=document.createElement('div');
+        el.className='thumb';
+        el.innerHTML=`<img src="${ph.url}" alt="foto"><button data-i="${i}">Excluir</button><a href="${ph.url}" target="_blank">abrir</a>`;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('button[data-i]').forEach(b=>{
+        b.addEventListener('click', async ()=>{
+          const i=Number(b.dataset.i); const ph=novo.photos[i];
+          if(confirm('Excluir esta foto?')){ await deletePhoto(ph.path); novo.photos.splice(i,1); renderNovo(); }
+        });
+      });
+
+      // itens
       const tbC=document.querySelector('#novo-carreg tbody'), tbD=document.querySelector('#novo-desc tbody'); tbC.innerHTML=''; tbD.innerHTML='';
       novo.itens.forEach(it=>{
         tbC.insertAdjacentHTML('beforeend',
@@ -386,52 +432,42 @@
       });
       updateNovoTotals();
     }
+
+    $('novo-add-foto').addEventListener('click', ()=> $('novo-file').click());
+    $('novo-file').addEventListener('change', async (e)=>{
+      if(!e.target.files?.length) return;
+      for(const f of e.target.files){
+        try{
+          const up = await uploadPhoto(novo.id, f);
+          novo.photos.push(up);
+        }catch(err){ console.error(err); alert('Falha ao enviar foto'); }
+      }
+      e.target.value='';
+      renderNovo();
+    });
+
     function hookNovoRow(id){
       const desc=$('n-desc-'+id), qtd=$('n-qtd-'+id), obs=$('n-obs-'+id),
             rec=$('n-rec-'+id), obsd=$('n-obsd-'+id),
             viewDesc=$('n-desc-view-'+id), diffEl=$('n-diff-'+id);
-      function recalc(){
-        const it=novo.itens.find(x=>x.id===id);
-        const diff=(Number(it.recebida||0)-Number(it.qtd||0));
-        diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateNovoTotals();
-      }
+      function recalc(){ const it=novo.itens.find(x=>x.id===id); const diff=(Number(it.recebida||0)-Number(it.qtd||0)); diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateNovoTotals(); }
       desc.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.desc=e.target.value; viewDesc.textContent=it.desc; });
       qtd.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.qtd=e.target.value===''? '' : Number(e.target.value); recalc(); });
       obs.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.obs=e.target.value; obsd.value=it.obs; });
       rec.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.recebida=e.target.value===''? '' : Number(e.target.value); recalc(); });
       obsd.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.obs=e.target.value; obs.value=it.obs; });
-      document.querySelector(`[data-rm="${id}"]`)?.addEventListener('click', ()=>{
-        novo.itens = novo.itens.filter(x=>x.id!==id); renderNovo();
-      });
+      document.querySelector(`[data-rm="${id}"]`)?.addEventListener('click', ()=>{ novo.itens=novo.itens.filter(x=>x.id!==id); renderNovo(); });
     }
     function updateNovoTotals(){
       const tc=novo.itens.reduce((a,b)=>a+(Number(b.qtd)||0),0);
       const tr=novo.itens.reduce((a,b)=>a+(Number(b.recebida)||0),0);
-      $('novo-total-carreg').textContent=tc;
-      $('novo-total-receb').textContent=tr;
-      $('novo-total-diff').textContent=tr-tc;
+      $('novo-total-carreg').textContent=tc; $('novo-total-receb').textContent=tr; $('novo-total-diff').textContent=tr-tc;
     }
     $('novo-add-item').addEventListener('click', ()=>{
       const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''});
-      const tbC=document.querySelector('#novo-carreg tbody'), tbD=document.querySelector('#novo-desc tbody');
-      tbC.insertAdjacentHTML('beforeend',
-      `<tr data-row="${id}">
-        <td><input id="n-desc-${id}"></td>
-        <td><input id="n-qtd-${id}" type="number" min="0"></td>
-        <td><input id="n-obs-${id}"></td>
-        <td class="hide-on-print"><button class="btn danger" data-rm="${id}">Remover</button></td>
-      </tr>`);
-      tbD.insertAdjacentHTML('beforeend',
-      `<tr data-rowd="${id}">
-        <td><span id="n-desc-view-${id}"></span></td>
-        <td><input id="n-rec-${id}" type="number" min="0"></td>
-        <td><span id="n-diff-${id}">0</span></td>
-        <td><input id="n-obsd-${id}"></td>
-      </tr>`);
-      hookNovoRow(id); updateNovoTotals();
+      renderNovo();
     });
 
-    // Inputs topo (Novo)
     ['novo-data','novo-origem','novo-destino','novo-placa','novo-motorista','novo-conf-origem','novo-conf-destino','novo-obs'].forEach(id=>{
       $(id).addEventListener('input', e=>{
         const v=e.target.value; if(id==='novo-data') novo.data=v;
@@ -461,6 +497,7 @@
       const id=$('editar-id').value.trim(); if(!id) return;
       if(confirm('Excluir documento '+id+'?')){ await delDoc(id); $('editar-form').classList.add('hide'); }
     });
+
     function renderEditar(){
       $('editar-doc').textContent=editing.id; $('editar-status').textContent=editing.status;
       $('ed-numdoc').value=editing.id; $('ed-data').value=editing.data||'';
@@ -468,8 +505,24 @@
       $('ed-origem').value=editing.origem||''; $('ed-destino').value=editing.destino||''; $('ed-placa').value=editing.placa||''; $('ed-motorista').value=editing.motorista||'';
       $('ed-conf-origem').value=editing.confOrigem||''; $('ed-conf-destino').value=editing.confDestino||''; $('ed-obs').value=editing.obs||'';
 
+      // fotos
+      const wrap=$('ed-fotos'); wrap.innerHTML='';
+      (editing.photos||[]).forEach((ph,i)=>{
+        const el=document.createElement('div');
+        el.className='thumb';
+        el.innerHTML=`<img src="${ph.url}" alt="foto"><button data-i="${i}">Excluir</button><a href="${ph.url}" target="_blank">abrir</a>`;
+        wrap.appendChild(el);
+      });
+      wrap.querySelectorAll('button[data-i]').forEach(b=>{
+        b.addEventListener('click', async ()=>{
+          const i=Number(b.dataset.i); const ph=editing.photos[i];
+          if(confirm('Excluir esta foto?')){ await deletePhoto(ph.path); editing.photos.splice(i,1); renderEditar(); }
+        });
+      });
+
+      // itens
       const tbC=document.querySelector('#ed-carreg tbody'), tbD=document.querySelector('#ed-desc tbody'); tbC.innerHTML=''; tbD.innerHTML='';
-      editing.itens.forEach(it=>{
+      (editing.itens||[]).forEach(it=>{
         tbC.insertAdjacentHTML('beforeend',
         `<tr data-row="${it.id}">
           <td><input id="e-desc-${it.id}" value="${it.desc||''}"></td>
@@ -489,40 +542,47 @@
       });
       updateEditarTotals();
     }
+
+    $('ed-add-foto').addEventListener('click', ()=> $('ed-file').click());
+    $('ed-file').addEventListener('change', async (e)=>{
+      if(!editing || !e.target.files?.length) return;
+      for(const f of e.target.files){
+        try{
+          const up = await uploadPhoto(editing.id, f);
+          editing.photos = editing.photos || [];
+          editing.photos.push(up);
+        }catch(err){ console.error(err); alert('Falha ao enviar foto'); }
+      }
+      e.target.value='';
+      renderEditar();
+    });
+
     function hookEditarRow(id){
       const desc=$('e-desc-'+id), qtd=$('e-qtd-'+id), obs=$('e-obs-'+id),
             rec=$('e-rec-'+id), obsd=$('e-obsd-'+id),
             viewDesc=$('e-desc-view-'+id), diffEl=$('e-diff-'+id);
-      function recalc(){const it=editing.itens.find(x=>x.id===id); const diff=(Number(it.recebida||0)-Number(it.qtd||0)); diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateEditarTotals();}
+      function recalc(){ const it=editing.itens.find(x=>x.id===id); const diff=(Number(it.recebida||0)-Number(it.qtd||0)); diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateEditarTotals(); }
       desc.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.desc=e.target.value; viewDesc.textContent=it.desc; });
       qtd.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.qtd=e.target.value===''? '' : Number(e.target.value); recalc(); });
       obs.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.obs=e.target.value; obsd.value=it.obs; });
       rec.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.recebida=e.target.value===''? '' : Number(e.target.value); recalc(); });
       obsd.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.obs=e.target.value; obs.value=it.obs; });
-      document.querySelector(`[data-rme="${id}"]`)?.addEventListener('click', ()=>{
-        editing.itens = editing.itens.filter(x=>x.id!==id); renderEditar();
-      });
+      document.querySelector(`[data-rme="${id}"]`)?.addEventListener('click', ()=>{ editing.itens=editing.itens.filter(x=>x.id!==id); renderEditar(); });
     }
     function updateEditarTotals(){
-      const tc=editing.itens.reduce((a,b)=>a+(Number(b.qtd)||0),0);
-      const tr=editing.itens.reduce((a,b)=>a+(Number(b.recebida)||0),0);
-      $('ed-total-carreg').textContent=tc;
-      $('ed-total-receb').textContent=tr;
-      $('ed-total-diff').textContent=tr-tc;
+      const tc=(editing.itens||[]).reduce((a,b)=>a+(Number(b.qtd)||0),0);
+      const tr=(editing.itens||[]).reduce((a,b)=>a+(Number(b.recebida)||0),0);
+      $('ed-total-carreg').textContent=tc; $('ed-total-receb').textContent=tr; $('ed-total-diff').textContent=tr-tc;
     }
     $('editar-salvar').addEventListener('click', async ()=>{ if(!editing) return; await saveDoc(editing); alert('Atualizado!'); });
     $('editar-imprimir').addEventListener('click', ()=>window.print());
     ['ed-data','ed-origem','ed-destino','ed-placa','ed-motorista','ed-conf-origem','ed-conf-destino','ed-obs'].forEach(id=>{
       $(id).addEventListener('input', e=>{
         if(!editing) return; const v=e.target.value;
-        if(id==='ed-data') editing.data=v;
-        else if(id==='ed-origem') editing.origem=v;
-        else if(id==='ed-destino') editing.destino=v;
-        else if(id==='ed-placa') editing.placa=v;
-        else if(id==='ed-motorista') editing.motorista=v;
-        else if(id==='ed-conf-origem') editing.confOrigem=v;
-        else if(id==='ed-conf-destino') editing.confDestino=v;
-        else if(id==='ed-obs') editing.obs=v;
+        if(id==='ed-data') editing.data=v; else if(id==='ed-origem') editing.origem=v;
+        else if(id==='ed-destino') editing.destino=v; else if(id==='ed-placa') editing.placa=v;
+        else if(id==='ed-motorista') editing.motorista=v; else if(id==='ed-conf-origem') editing.confOrigem=v;
+        else if(id==='ed-conf-destino') editing.confDestino=v; else if(id==='ed-obs') editing.obs=v;
       });
     });
     $('ed-status').addEventListener('change', e=>{ if(!editing) return; editing.status=e.target.value; $('editar-status').textContent=editing.status; });
@@ -537,125 +597,65 @@
       renderSearch(rows);
     });
     $('q-limpar').addEventListener('click', ()=>{ $('q-doc').value=''; $('q-placa').value=''; $('q-motorista').value=''; renderSearch([]); });
-
     function renderSearch(rows){
       const tb=document.querySelector('#q-table tbody'); tb.innerHTML='';
       rows.forEach(d=>{
         const tr=document.createElement('tr');
-        tr.innerHTML = `<td>${d.id}</td><td>${d.data||''}</td><td>${d.placa||''}</td><td>${d.motorista||''}</td><td>${d.status||''}</td>
-          <td><button class='btn ghost' data-open='${d.id}'>Editar</button></td>`;
+        tr.innerHTML=`<td>${d.id}</td><td>${d.data||''}</td><td>${d.placa||''}</td><td>${d.motorista||''}</td><td>${d.status||''}</td>
+                      <td><button class='btn ghost' data-open='${d.id}'>Editar</button></td>`;
         tb.appendChild(tr);
       });
       tb.querySelectorAll('button[data-open]').forEach(b=> b.addEventListener('click', async (e)=>{
-        const id=e.target.getAttribute('data-open');
-        tabs.editar.btn.click();
-        $('editar-id').value = id;
-        const doc = await getDoc(id);
-        if(!doc){ alert('Documento não encontrado.'); return; }
-        editing = doc; $('editar-form').classList.remove('hide'); renderEditar();
+        const id=e.target.getAttribute('data-open'); tabs.editar.btn.click(); $('editar-id').value=id;
+        const doc=await getDoc(id); if(!doc){alert('Documento não encontrado.'); return;}
+        editing=doc; $('editar-form').classList.remove('hide'); renderEditar();
       }));
     }
 
-    // ------- DASHBOARD -------
-    let dashChart = null;
-
+    // DASHBOARD
+    let dashChart=null;
     function sumFromDocs(docs){
-      let enviados = 0, recebidos = 0, quebra = 0;
-      const porDia = {}; // { 'yyyy-mm-dd': {env, rec, qbr} }
+      let enviados=0, recebidos=0, quebra=0; const porDia={};
       for(const d of docs){
-        const dataDia = d.data || 'SemData';
-        if(!porDia[dataDia]) porDia[dataDia] = {env:0, rec:0, qbr:0};
-        const itens = (d.payload && d.payload.itens) ? d.payload.itens : [];
+        const dataDia=d.data||'SemData'; if(!porDia[dataDia]) porDia[dataDia]={env:0,rec:0,qbr:0};
+        const itens=(d.payload?.itens)||[];
         for(const it of itens){
-          const q = Number(it.qtd||0);
-          const r = Number(it.recebida||0);
-          enviados += q;
-          recebidos += r;
-          const qbr = Math.max(0, q - r);
-          quebra += qbr;
-          porDia[dataDia].env += q;
-          porDia[dataDia].rec += r;
-          porDia[dataDia].qbr += qbr;
+          const q=Number(it.qtd||0), r=Number(it.recebida||0), qbr=Math.max(0,q-r);
+          enviados+=q; recebidos+=r; quebra+=qbr;
+          porDia[dataDia].env+=q; porDia[dataDia].rec+=r; porDia[dataDia].qbr+=qbr;
         }
-      }
-      return {enviados, recebidos, quebra, porDia};
+      } return {enviados,recebidos,quebra,porDia};
     }
-    function totalLinha(payload){
-      let env=0, rec=0;
-      (payload?.itens||[]).forEach(it=>{
-        env += Number(it.qtd||0);
-        rec += Number(it.recebida||0);
-      });
-      return {env, rec};
-    }
+    function totalLinha(payload){ let env=0, rec=0; (payload?.itens||[]).forEach(it=>{env+=Number(it.qtd||0); rec+=Number(it.recebida||0);}); return {env,rec}; }
 
     async function loadDashboard(){
-      const de  = $('dash-de').value;
-      const ate = $('dash-ate').value;
-
-      let q = supa.from('docs').select('data,placa,motorista,status,payload').order('data', {ascending:true});
-      if(de)  q = q.gte('data', de);
-      if(ate) q = q.lte('data', ate);
+      const de=$('dash-de').value, ate=$('dash-ate').value;
+      let q=supa.from('docs').select('data,placa,motorista,status,payload').order('data',{ascending:true});
+      if(de) q=q.gte('data',de); if(ate) q=q.lte('data',ate);
       const { data, error } = await q;
       if(error){ console.error(error); alert('Erro ao carregar dashboard: '+error.message); return; }
 
-      // KPIs & linha
-      const agg = sumFromDocs(data);
-      $('kpi-enviados').textContent = agg.enviados;
-      $('kpi-recebidos').textContent = agg.recebidos;
-      $('kpi-quebra').textContent   = agg.quebra;
+      const agg=sumFromDocs(data);
+      $('kpi-enviados').textContent=agg.enviados; $('kpi-recebidos').textContent=agg.recebidos; $('kpi-quebra').textContent=agg.quebra;
 
-      const dias = Object.keys(agg.porDia).sort();
-      const serieEnv = dias.map(d=>agg.porDia[d].env);
-      const serieRec = dias.map(d=>agg.porDia[d].rec);
-      const serieQbr = dias.map(d=>agg.porDia[d].qbr);
+      const dias=Object.keys(agg.porDia).sort();
+      const serieEnv=dias.map(d=>agg.porDia[d].env), serieRec=dias.map(d=>agg.porDia[d].rec), serieQbr=dias.map(d=>agg.porDia[d].qbr);
+      const ctx=document.getElementById('dash-chart').getContext('2d'); if(dashChart) dashChart.destroy();
+      dashChart=new Chart(ctx,{type:'line',data:{labels:dias,datasets:[{label:'Enviados',data:serieEnv},{label:'Recebidos',data:serieRec},{label:'Quebra',data:serieQbr}]},options:{responsive:true,plugins:{legend:{position:'top'}},interaction:{mode:'index',intersect:false},scales:{y:{beginAtZero:true}}}});
 
-      const ctx = document.getElementById('dash-chart').getContext('2d');
-      if(dashChart) dashChart.destroy();
-      dashChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: dias,
-          datasets: [
-            { label: 'Enviados',  data: serieEnv },
-            { label: 'Recebidos', data: serieRec },
-            { label: 'Quebra',    data: serieQbr }
-          ]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { position: 'top' } },
-          interaction: { mode:'index', intersect:false },
-          scales: { y: { beginAtZero: true } }
-        }
-      });
-
-      // Tabela de detalhes
-      const tb = document.querySelector('#dash-table tbody');
-      tb.innerHTML = '';
+      const tb=document.querySelector('#dash-table tbody'); tb.innerHTML='';
       for(const d of data){
-        const { env, rec } = totalLinha(d.payload||{});
-        const placa = d.placa ?? d.payload?.placa ?? '';
-        const mot   = d.motorista ?? d.payload?.motorista ?? '';
-        const c1    = d.payload?.confOrigem ?? '';
-        const c2    = d.payload?.confDestino ?? '';
-        const st    = d.status ?? d.payload?.status ?? '';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${d.data||''}</td>
-          <td>${placa}</td>
-          <td>${mot}</td>
-          <td>${env}</td>
-          <td>${rec}</td>
-          <td>${c1}</td>
-          <td>${c2}</td>
-          <td>${st}</td>`;
+        const { env, rec }=totalLinha(d.payload||{});
+        const placa=d.placa ?? d.payload?.placa ?? ''; const mot=d.motorista ?? d.payload?.motorista ?? '';
+        const c1=d.payload?.confOrigem ?? ''; const c2=d.payload?.confDestino ?? ''; const st=d.status ?? d.payload?.status ?? '';
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${d.data||''}</td><td>${placa}</td><td>${mot}</td><td>${env}</td><td>${rec}</td><td>${c1}</td><td>${c2}</td><td>${st}</td>`;
         tb.appendChild(tr);
       }
     }
     $('dash-atualizar')?.addEventListener('click', loadDashboard);
 
-    // Inicialização
+    // Init
     function ensureDefaultsNovo(){ if(novo.itens.length===0){ const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''}); renderNovo(); } }
     resetNovoForm();
   </script>
