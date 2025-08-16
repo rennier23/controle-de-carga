@@ -12,6 +12,9 @@
   <!-- Chart.js (para o gráfico de linha do dashboard) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SuperFrio – Controle de Carga</title>
@@ -36,24 +39,31 @@
     .tagline{margin:0;font-size:12px;opacity:.9;letter-spacing:.2px}
 
     nav{display:flex;gap:10px;flex-wrap:wrap}
-    nav button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;backdrop-filter:blur(2px);}
+    nav button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;backdrop-filter:blur(2px);display:flex;align-items:center;gap:6px;font-weight:500;}
     nav button.active{background:#fff;color:var(--primary-dark);border-color:#fff}
+    nav button i{margin-right:2px}
 
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
     label{display:block;font-size:13px;margin-bottom:6px;color:#0f172a}
     input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;outline:none;box-shadow:0 0 0 0 rgba(0,0,0,0);}
     input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
     textarea{min-height:90px;resize:vertical}
     .grid{display:grid;gap:10px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
     .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{background:var(--primary-dark);color:#fff;border:none;border-radius:10px;padding:9px 12px;cursor:pointer}
+    .btn{background:var(--primary-dark);color:#fff;border:none;border-radius:10px;padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:500}
+    .btn i{margin-right:4px}
     .btn.ghost{background:#fff;color:var(--primary-dark);border:1px solid var(--primary-dark)}
-    .btn.danger{background:var(--danger)}
+    .btn.danger{
+      /* Botão de ações perigosas (excluir) com fundo vermelho e texto branco */
+      background:var(--danger);
+      color:#fff;
+      border:1px solid var(--danger);
+    }
     .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
 
     table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid var(--border);background:#fff;text-align:left;font-size:14px}
-    th{background:#eff6ff;color:#0b3b66}
+    th{background:#eff6ff;color:#0b3b66;font-weight:600}
     tr:last-child td{border-bottom:none}
 
     .table-wrap{overflow:auto}
@@ -77,6 +87,9 @@
     .thumb button{position:absolute;top:6px;right:6px;background:#fff;color:#111;border:1px solid var(--border);border-radius:8px;padding:4px 7px;font-size:12px;cursor:pointer}
     .thumb a{position:absolute;left:6px;bottom:6px;background:#ffffffd9;border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:11px;text-decoration:none;color:#0b3b66}
 
+    /* Ícones em títulos */
+    h3 i, h4 i{color:var(--primary-dark);margin-right:6px}
+
     @media (max-width:860px){
       .g3{grid-template-columns:1fr}
       .g2{grid-template-columns:1fr}
@@ -96,10 +109,10 @@
         </div>
       </div>
       <nav>
-        <button id="tab-novo" class="active">Novo</button>
-        <button id="tab-editar">Editar</button>
-        <button id="tab-pesquisar">Pesquisar</button>
-        <button id="tab-dash">Dashboard</button>
+        <button id="tab-novo" class="active"><i class="fa-solid fa-plus"></i> Novo</button>
+        <button id="tab-editar"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+        <button id="tab-pesquisar"><i class="fa-solid fa-search"></i> Pesquisar</button>
+        <button id="tab-dash"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
       </nav>
     </div>
   </div>
@@ -110,13 +123,13 @@
       <div class="row" style="justify-content:space-between">
         <div class="pill">Documento: <b id="novo-doc"></b> • Status: <b id="novo-status"></b></div>
         <div class="actions">
-          <button class="btn" id="novo-salvar">Salvar</button>
-          <button class="btn ghost" id="novo-novo">Novo Doc</button>
-          <button class="btn ghost" id="novo-imprimir">Imprimir / PDF</button>
+          <button class="btn" id="novo-salvar"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+          <button class="btn ghost" id="novo-novo"><i class="fa-solid fa-file-circle-plus"></i> Novo Doc</button>
+          <button class="btn ghost" id="novo-imprimir"><i class="fa-solid fa-print"></i> Imprimir / PDF</button>
         </div>
       </div>
 
-      <h3>Identificação</h3>
+      <h3><i class="fa-solid fa-id-badge"></i> Identificação</h3>
       <div class="grid g3">
         <div><label>Nº Documento (auto)</label><input id="novo-numdoc" readonly></div>
         <div><label>Data carregamento</label><input type="date" id="novo-data"/></div>
@@ -137,25 +150,25 @@
       </div>
 
       <!-- Fotos (NOVO) -->
-      <h3 style="margin-top:12px">Fotos</h3>
+      <h3 style="margin-top:12px"><i class="fa-solid fa-camera"></i> Fotos</h3>
       <div class="actions">
         <input id="novo-file" type="file" accept="image/*" capture="environment" multiple class="hide"/>
-        <button class="btn" id="novo-add-foto">Adicionar foto</button>
+        <button class="btn" id="novo-add-foto"><i class="fa-solid fa-camera-retro"></i> Adicionar foto</button>
         <span class="muted">No celular, abre a câmera.</span>
       </div>
       <div id="novo-fotos" class="photo-grid" style="margin-top:8px"></div>
 
-      <h3 style="margin-top:12px">Carregamento</h3>
+      <h3 style="margin-top:12px"><i class="fa-solid fa-boxes-stacked"></i> Carregamento</h3>
       <table id="novo-carreg">
         <thead><tr><th>Descrição</th><th>Qtd (pallets)</th><th>Observações</th><th class="hide-on-print"></th></tr></thead>
         <tbody></tbody>
       </table>
       <div class="row" style="justify-content:space-between;margin-top:8px">
-        <button class="btn ghost" id="novo-add-item">+ Adicionar item</button>
+        <button class="btn ghost" id="novo-add-item"><i class="fa-solid fa-plus"></i> Adicionar item</button>
         <div class="pill">Total carregado: <b id="novo-total-carreg">0</b></div>
       </div>
 
-      <h3 style="margin-top:12px">Descarregamento</h3>
+      <h3 style="margin-top:12px"><i class="fa-solid fa-truck"></i> Descarregamento</h3>
       <table id="novo-desc">
         <thead><tr><th>Descrição</th><th>Qtd Recebida</th><th>Diferença</th><th>Observações</th></tr></thead>
         <tbody></tbody>
@@ -170,20 +183,20 @@
     <section id="page-editar" class="card hide">
       <div class="row">
         <input id="editar-id" placeholder="Digite nº do documento…"/>
-        <button class="btn" id="editar-abrir">Abrir</button>
-        <button class="btn ghost" id="editar-remover">Excluir</button>
+        <button class="btn" id="editar-abrir"><i class="fa-solid fa-folder-open"></i> Abrir</button>
+        <button class="btn ghost" id="editar-remover"><i class="fa-solid fa-trash"></i> Excluir</button>
       </div>
 
       <div id="editar-form" class="hide">
         <div class="row" style="justify-content:space-between;margin-top:8px">
           <div class="pill">Documento: <b id="editar-doc"></b> • Status: <b id="editar-status"></b></div>
           <div class="actions">
-            <button class="btn" id="editar-salvar">Salvar</button>
-            <button class="btn ghost" id="editar-imprimir">Imprimir / PDF</button>
+            <button class="btn" id="editar-salvar"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+            <button class="btn ghost" id="editar-imprimir"><i class="fa-solid fa-print"></i> Imprimir / PDF</button>
           </div>
         </div>
 
-        <h3>Identificação</h3>
+        <h3><i class="fa-solid fa-id-badge"></i> Identificação</h3>
         <div class="grid g3">
           <div><label>Nº Documento</label><input id="ed-numdoc" readonly></div>
           <div><label>Data carregamento</label><input type="date" id="ed-data"/></div>
@@ -204,24 +217,24 @@
         </div>
 
         <!-- Fotos (EDITAR) -->
-        <h3 style="margin-top:12px">Fotos</h3>
+        <h3 style="margin-top:12px"><i class="fa-solid fa-camera"></i> Fotos</h3>
         <div class="actions">
           <input id="ed-file" type="file" accept="image/*" capture="environment" multiple class="hide"/>
-          <button class="btn" id="ed-add-foto">Adicionar foto</button>
+          <button class="btn" id="ed-add-foto"><i class="fa-solid fa-camera-retro"></i> Adicionar foto</button>
         </div>
         <div id="ed-fotos" class="photo-grid" style="margin-top:8px"></div>
 
-        <h3 style="margin-top:12px">Carregamento</h3>
+        <h3 style="margin-top:12px"><i class="fa-solid fa-boxes-stacked"></i> Carregamento</h3>
         <table id="ed-carreg">
           <thead><tr><th>Descrição</th><th>Qtd (pallets)</th><th>Observações</th><th class="hide-on-print"></th></tr></thead>
           <tbody></tbody>
         </table>
         <div class="row" style="justify-content:space-between;margin-top:8px">
-          <button class="btn ghost" id="ed-add-item">+ Adicionar item</button>
+          <button class="btn ghost" id="ed-add-item"><i class="fa-solid fa-plus"></i> Adicionar item</button>
           <div class="pill">Total carregado: <b id="ed-total-carreg">0</b></div>
         </div>
 
-        <h3 style="margin-top:12px">Descarregamento</h3>
+        <h3 style="margin-top:12px"><i class="fa-solid fa-truck"></i> Descarregamento</h3>
         <table id="ed-desc">
           <thead><tr><th>Descrição</th><th>Qtd Recebida</th><th>Diferença</th><th>Observações</th></tr></thead>
           <tbody></tbody>
@@ -241,8 +254,8 @@
         <div><label>Motorista</label><input id="q-motorista"/></div>
       </div>
       <div class="actions" style="margin-top:8px">
-        <button class="btn" id="q-buscar">Pesquisar</button>
-        <button class="btn ghost" id="q-limpar">Limpar</button>
+        <button class="btn" id="q-buscar"><i class="fa-solid fa-magnifying-glass"></i> Pesquisar</button>
+        <button class="btn ghost" id="q-limpar"><i class="fa-solid fa-broom"></i> Limpar</button>
       </div>
       <div style="margin-top:10px">
         <table id="q-table">
@@ -255,7 +268,7 @@
     <!-- DASHBOARD -->
     <section id="page-dash" class="card hide">
       <div class="row" style="justify-content:space-between">
-        <h3 style="margin:0">Dashboard</h3>
+        <h3 style="margin:0"><i class="fa-solid fa-chart-pie"></i> Dashboard</h3>
         <div class="row">
           <div>
             <label>De</label>
@@ -265,7 +278,7 @@
             <label>Até</label>
             <input type="date" id="dash-ate">
           </div>
-          <button class="btn" id="dash-atualizar" style="align-self:flex-end">Atualizar</button>
+          <button class="btn" id="dash-atualizar" style="align-self:flex-end"><i class="fa-solid fa-arrows-rotate"></i> Atualizar</button>
         </div>
       </div>
 
@@ -278,7 +291,7 @@
       <div class="card" style="margin-top:10px"><canvas id="dash-chart" height="120"></canvas></div>
 
       <div class="card" style="margin-top:10px">
-        <h4 style="margin:0 0 8px 0">Detalhes por documento</h4>
+        <h4 style="margin:0 0 8px 0"><i class="fa-solid fa-clipboard-list"></i> Detalhes por documento</h4>
         <div class="table-wrap">
           <table id="dash-table">
             <thead>
@@ -298,10 +311,10 @@
     const $ = (id)=>document.getElementById(id);
 
     // Tabs
-    const tabs={novo:{btn:$('tab-novo'),page:$('page-novo')},
-                editar:{btn:$('tab-editar'),page:$('page-editar')},
-                pesq:{btn:$('page-pesquisar')?$('tab-pesquisar'):null,page:$('page-pesquisar')},
-                dash:{btn:$('tab-dash'),page:$('page-dash')}};
+    const tabs={novo:{btn:$("tab-novo"),page:$("page-novo")},
+                editar:{btn:$("tab-editar"),page:$("page-editar")},
+                pesq:{btn:$("page-pesquisar")?$("tab-pesquisar"):null,page:$("page-pesquisar")},
+                dash:{btn:$("tab-dash"),page:$("page-dash")}};
     function activate(t){
       Object.values(tabs).forEach(x=>{ if(!x) return; x.btn.classList.remove('active');x.page.classList.add('hide');});
       t.btn.classList.add('active'); t.page.classList.remove('hide');
@@ -454,7 +467,7 @@
           <td><input id="n-desc-${it.id}" value="${it.desc||''}"></td>
           <td><input id="n-qtd-${it.id}" type="number" min="0" value="${it.qtd!==''?it.qtd:''}"></td>
           <td><input id="n-obs-${it.id}" value="${it.obs||''}"></td>
-          <td class="hide-on-print"><button class="btn danger" data-rm="${it.id}">Remover</button></td>
+          <td class="hide-on-print"><button class="btn danger" data-rm="${it.id}"><i class="fa-solid fa-trash"></i> Remover</button></td>
         </tr>`);
         const diff=(Number(it.recebida||0)-Number(it.qtd||0));
         tbD.insertAdjacentHTML('beforeend',
@@ -462,7 +475,8 @@
           <td><span id="n-desc-view-${it.id}">${it.desc||''}</span></td>
           <td><input id="n-rec-${it.id}" type="number" min="0" value="${it.recebida!==''?it.recebida:''}"></td>
           <td><span id="n-diff-${it.id}">${diff}</span></td>
-          <td><input id="n-obsd-${it.id}" value="${it.obs||''}"></td>
+          <!-- Campo de observações do descarregamento usa obsd se existir, senão obs -->
+          <td><input id="n-obsd-${it.id}" value="${typeof it.obsd !== 'undefined' ? it.obsd : (it.obs||'')}"></td>
         </tr>`);
         hookNovoRow(it.id);
       });
@@ -491,9 +505,17 @@
       function recalc(){ const it=novo.itens.find(x=>x.id===id); const diff=(Number(it.recebida||0)-Number(it.qtd||0)); diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateNovoTotals(); }
       desc.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.desc=e.target.value; viewDesc.textContent=it.desc; });
       qtd.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.qtd=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      obs.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.obs=e.target.value; obsd.value=it.obs; });
+      // Campo observações do carregamento: atualiza apenas it.obs
+      obs.addEventListener('input', e=>{
+        const it=novo.itens.find(x=>x.id===id);
+        it.obs = e.target.value;
+      });
       rec.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.recebida=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      obsd.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.obs=e.target.value; obs.value=it.obs; });
+      // Campo observações do descarregamento: atualiza apenas it.obsd
+      obsd.addEventListener('input', e=>{
+        const it=novo.itens.find(x=>x.id===id);
+        it.obsd = e.target.value;
+      });
       document.querySelector(`[data-rm="${id}"]`)?.addEventListener('click', ()=>{ novo.itens=novo.itens.filter(x=>x.id!==id); renderNovo(); });
     }
     function updateNovoTotals(){
@@ -502,7 +524,9 @@
       $('novo-total-carreg').textContent=tc; $('novo-total-receb').textContent=tr; $('novo-total-diff').textContent=tr-tc;
     }
     $('novo-add-item').addEventListener('click', ()=>{
-      const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''});
+      const id=genDocId();
+      // Novo item com campos separados para observações de carregamento (obs) e descarregamento (obsd)
+      novo.itens.push({id,desc:'',qtd:'',obs:'',obsd:'',recebida:''});
       renderNovo();
     });
 
@@ -566,7 +590,7 @@
           <td><input id="e-desc-${it.id}" value="${it.desc||''}"></td>
           <td><input id="e-qtd-${it.id}" type="number" min="0" value="${it.qtd!==''?it.qtd:''}"></td>
           <td><input id="e-obs-${it.id}" value="${it.obs||''}"></td>
-          <td class="hide-on-print"><button class="btn danger" data-rme="${it.id}">Remover</button></td>
+          <td class="hide-on-print"><button class="btn danger" data-rme="${it.id}"><i class="fa-solid fa-trash"></i> Remover</button></td>
         </tr>`);
         const diff=(Number(it.recebida||0)-Number(it.qtd||0));
         tbD.insertAdjacentHTML('beforeend',
@@ -574,7 +598,7 @@
           <td><span id="e-desc-view-${it.id}">${it.desc||''}</span></td>
           <td><input id="e-rec-${it.id}" type="number" min="0" value="${it.recebida!==''?it.recebida:''}"></td>
           <td><span id="e-diff-${it.id}">${diff}</span></td>
-          <td><input id="e-obsd-${it.id}" value="${it.obs||''}"></td>
+          <td><input id="e-obsd-${it.id}" value="${typeof it.obsd !== 'undefined' ? it.obsd : (it.obs||'')}"></td>
         </tr>`);
         hookEditarRow(it.id);
       });
@@ -604,9 +628,17 @@
       function recalc(){ const it=editing.itens.find(x=>x.id===id); const diff=(Number(it.recebida||0)-Number(it.qtd||0)); diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateEditarTotals(); }
       desc.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.desc=e.target.value; viewDesc.textContent=it.desc; });
       qtd.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.qtd=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      obs.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.obs=e.target.value; obsd.value=it.obs; });
+      // Observações do carregamento: atualiza apenas it.obs
+      obs.addEventListener('input', e=>{
+        const it=editing.itens.find(x=>x.id===id);
+        it.obs = e.target.value;
+      });
       rec.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.recebida=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      obsd.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.obs=e.target.value; obs.value=it.obs; });
+      // Observações do descarregamento: atualiza apenas it.obsd
+      obsd.addEventListener('input', e=>{
+        const it=editing.itens.find(x=>x.id===id);
+        it.obsd = e.target.value;
+      });
       document.querySelector(`[data-rme="${id}"]`)?.addEventListener('click', ()=>{ editing.itens=editing.itens.filter(x=>x.id!==id); renderEditar(); });
     }
     function updateEditarTotals(){
@@ -642,7 +674,7 @@
       rows.forEach(d=>{
         const tr=document.createElement('tr');
         tr.innerHTML=`<td>${d.id}</td><td>${d.data||''}</td><td>${d.placa||''}</td><td>${d.motorista||''}</td><td>${d.status||''}</td>
-                      <td><button class='btn ghost' data-open='${d.id}'>Editar</button></td>`;
+                      <td><button class='btn ghost' data-open='${d.id}'><i class="fa-solid fa-pen-to-square"></i> Editar</button></td>`;
         tb.appendChild(tr);
       });
       tb.querySelectorAll('button[data-open]').forEach(b=> b.addEventListener('click', async (e)=>{
@@ -715,7 +747,14 @@
     $('dash-atualizar')?.addEventListener('click', loadDashboard);
 
     // Init
-    function ensureDefaultsNovo(){ if(novo.itens.length===0){ const id=genDocId(); novo.itens.push({id,desc:'',qtd:'',obs:'',recebida:''}); renderNovo(); } }
+    function ensureDefaultsNovo(){
+      if(novo.itens.length === 0){
+        const id = genDocId();
+        // Cria item padrão com campos separados para observações de carregamento (obs) e descarregamento (obsd)
+        novo.itens.push({ id, desc:'', qtd:'', obs:'', obsd:'', recebida:'' });
+        renderNovo();
+      }
+    }
     resetNovoForm();
   </script>
 </body>
