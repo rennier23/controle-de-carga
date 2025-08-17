@@ -9,15 +9,16 @@
     window.supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
 
-  <!-- Chart.js (para o gráfico de linha do dashboard) -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
-  <!-- Font Awesome para ícones -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SuperFrio – Controle de Carga</title>
+
   <style>
     :root{
       --bg:#f3f7fb;--card:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;
@@ -31,59 +32,73 @@
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif}
     .wrap{max-width:1100px;margin:0 auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:14px}
 
-    .brandbar{background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%);padding:14px 18px;color:#fff;border-bottom:1px solid #dbeafe;box-shadow:0 6px 20px rgba(10,111,185,.15);}
+    /* Top bar */
+    .brandbar{
+      background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 45%,#1EC7E6 100%);
+      padding:14px 18px;color:#fff;border-bottom:1px solid #dbeafe;
+      box-shadow:0 6px 20px rgba(10,111,185,.15);
+    }
     .brandbar .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between}
     .logo{display:flex;align-items:center;gap:12px}
     .logo img{height:38px;width:auto;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));background:transparent}
     .logo h1{margin:0;font-size:20px;letter-spacing:.3px;font-weight:700}
     .tagline{margin:0;font-size:12px;opacity:.9;letter-spacing:.2px}
 
+    /* Nav pills */
     nav{display:flex;gap:10px;flex-wrap:wrap}
-    nav button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer;backdrop-filter:blur(2px);display:flex;align-items:center;gap:6px;font-weight:500;}
+    nav button{
+      border:1px solid rgba(255,255,255,.55);
+      background:rgba(255,255,255,.12);
+      color:#fff;padding:8px 12px;border-radius:12px;cursor:pointer;
+      backdrop-filter:blur(2px);display:flex;align-items:center;gap:6px;font-weight:600;
+    }
     nav button.active{background:#fff;color:var(--primary-dark);border-color:#fff}
     nav button i{margin-right:2px}
 
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+    /* Card + fields */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
     label{display:block;font-size:13px;margin-bottom:6px;color:#0f172a}
-    input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;outline:none;box-shadow:0 0 0 0 rgba(0,0,0,0);}
+    input,textarea,select{
+      width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;
+      font-size:14px;background:#fff;outline:none;box-shadow:0 0 0 0 rgba(0,0,0,0);
+    }
     input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
     textarea{min-height:90px;resize:vertical}
-    .grid{display:grid;gap:10px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+    .grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
     .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{background:var(--primary-dark);color:#fff;border:none;border-radius:10px;padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:500}
+    .btn{background:var(--primary-dark);color:#fff;border:none;border-radius:10px;padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600}
     .btn i{margin-right:4px}
     .btn.ghost{background:#fff;color:var(--primary-dark);border:1px solid var(--primary-dark)}
-    .btn.danger{
-      /* Botão de ações perigosas (excluir) com fundo vermelho e texto branco */
-      background:var(--danger);
-      color:#fff;
-      border:1px solid var(--danger);
-    }
+    .btn.danger{background:var(--danger);color:#fff;border:1px solid var(--danger)}
+    /* garante vermelho no excluir da tela editar */
+    #editar-remover{background:var(--danger)!important;color:#fff!important;border:1px solid var(--danger)!important}
 
-    /* Garante que o botão de remover documento (editar-remover) seja vermelho mesmo sem classe danger */
-    #editar-remover{
-      background:var(--danger) !important;
-      color:#fff !important;
-      border:1px solid var(--danger) !important;
-    }
     .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
 
-    table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    /* Tabelas com head em degradê contínuo */
+    table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid var(--border);background:#fff;text-align:left;font-size:14px}
-    th{background:#eff6ff;color:#0b3b66;font-weight:600}
     tr:last-child td{border-bottom:none}
+    .table-gradient thead tr{
+      background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%);
+    }
+    .table-gradient thead th{
+      color:#fff;background:transparent;border-bottom:none;
+    }
+    .table-gradient thead th+th{border-left:none}
+    .table-gradient{box-shadow:0 6px 12px rgba(20,140,214,.08)}
 
     .table-wrap{overflow:auto}
     .muted{color:var(--muted);font-size:12px}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .hide{display:none !important}
 
-    /* KPI CARDS coloridos */
+    /* KPI CARDS */
     .kpis{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
     .kpi{border-radius:12px;padding:16px;border:1px solid var(--border);background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.04)}
-    .kpi--blue{background:linear-gradient(180deg,var(--info-100),#fff) !important;border-color:var(--info-300) !important}
-    .kpi--green{background:linear-gradient(180deg,var(--ok-100),#fff) !important;border-color:var(--ok-300) !important}
-    .kpi--red{background:linear-gradient(180deg,var(--err-100),#fff) !important;border-color:var(--err-300) !important}
+    .kpi--blue{background:linear-gradient(180deg,var(--info-100),#fff)!important;border-color:var(--info-300)!important}
+    .kpi--green{background:linear-gradient(180deg,var(--ok-100),#fff)!important;border-color:var(--ok-300)!important}
+    .kpi--red{background:linear-gradient(180deg,var(--err-100),#fff)!important;border-color:var(--err-300)!important}
     .kpi .title{color:var(--muted);font-size:13px;margin-bottom:8px}
     .kpi .value{font-size:30px;font-weight:800}
 
@@ -94,8 +109,11 @@
     .thumb button{position:absolute;top:6px;right:6px;background:#fff;color:#111;border:1px solid var(--border);border-radius:8px;padding:4px 7px;font-size:12px;cursor:pointer}
     .thumb a{position:absolute;left:6px;bottom:6px;background:#ffffffd9;border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:11px;text-decoration:none;color:#0b3b66}
 
-    /* Ícones em títulos */
     h3 i, h4 i{color:var(--primary-dark);margin-right:6px}
+
+    /* ====== ÍCONES DE STATUS (apenas visual) ====== */
+    .status-cell{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+    .status-dot{width:10px;height:10px;border-radius:50%}
 
     @media (max-width:860px){
       .g3{grid-template-columns:1fr}
@@ -109,7 +127,8 @@
   <div class="brandbar">
     <div class="row">
       <div class="logo">
-        <img src="https://dummyimage.com/140x38/148cd6/ffffff&text=SuperFrio" alt="SuperFrio logo"/>
+        <!-- Use seu logo oficial -->
+        <img src="https://superfrio.com.br/wp-content/uploads/2018/10/Logo-1-300x180.png" alt="SuperFrio logo"/>
         <div>
           <h1>SuperFrio – Controle de Carga</h1>
           <p class="tagline">Logística Frigorificada • Carregamento & Descarregamento</p>
@@ -166,7 +185,7 @@
       <div id="novo-fotos" class="photo-grid" style="margin-top:8px"></div>
 
       <h3 style="margin-top:12px"><i class="fa-solid fa-boxes-stacked"></i> Carregamento</h3>
-      <table id="novo-carreg">
+      <table id="novo-carreg" class="table-gradient">
         <thead><tr><th>Descrição</th><th>Qtd (pallets)</th><th>Observações</th><th class="hide-on-print"></th></tr></thead>
         <tbody></tbody>
       </table>
@@ -176,7 +195,7 @@
       </div>
 
       <h3 style="margin-top:12px"><i class="fa-solid fa-truck"></i> Descarregamento</h3>
-      <table id="novo-desc">
+      <table id="novo-desc" class="table-gradient">
         <thead><tr><th>Descrição</th><th>Qtd Recebida</th><th>Diferença</th><th>Observações</th></tr></thead>
         <tbody></tbody>
       </table>
@@ -191,7 +210,6 @@
       <div class="row">
         <input id="editar-id" placeholder="Digite nº do documento…"/>
         <button class="btn" id="editar-abrir"><i class="fa-solid fa-folder-open"></i> Abrir</button>
-        <!-- Botão de exclusão em vermelho -->
         <button class="btn danger" id="editar-remover"><i class="fa-solid fa-trash"></i> Excluir</button>
       </div>
 
@@ -224,7 +242,6 @@
           <div class="g2" style="grid-column:1/-1"><label>Observações</label><input id="ed-obs"/></div>
         </div>
 
-        <!-- Fotos (EDITAR) -->
         <h3 style="margin-top:12px"><i class="fa-solid fa-camera"></i> Fotos</h3>
         <div class="actions">
           <input id="ed-file" type="file" accept="image/*" capture="environment" multiple class="hide"/>
@@ -233,7 +250,7 @@
         <div id="ed-fotos" class="photo-grid" style="margin-top:8px"></div>
 
         <h3 style="margin-top:12px"><i class="fa-solid fa-boxes-stacked"></i> Carregamento</h3>
-        <table id="ed-carreg">
+        <table id="ed-carreg" class="table-gradient">
           <thead><tr><th>Descrição</th><th>Qtd (pallets)</th><th>Observações</th><th class="hide-on-print"></th></tr></thead>
           <tbody></tbody>
         </table>
@@ -243,7 +260,7 @@
         </div>
 
         <h3 style="margin-top:12px"><i class="fa-solid fa-truck"></i> Descarregamento</h3>
-        <table id="ed-desc">
+        <table id="ed-desc" class="table-gradient">
           <thead><tr><th>Descrição</th><th>Qtd Recebida</th><th>Diferença</th><th>Observações</th></tr></thead>
           <tbody></tbody>
         </table>
@@ -266,7 +283,7 @@
         <button class="btn ghost" id="q-limpar"><i class="fa-solid fa-broom"></i> Limpar</button>
       </div>
       <div style="margin-top:10px">
-        <table id="q-table">
+        <table id="q-table" class="table-gradient">
           <thead><tr><th>Documento</th><th>Data</th><th>Placa</th><th>Motorista</th><th>Status</th><th>Ações</th></tr></thead>
           <tbody></tbody>
         </table>
@@ -301,7 +318,7 @@
       <div class="card" style="margin-top:10px">
         <h4 style="margin:0 0 8px 0"><i class="fa-solid fa-clipboard-list"></i> Detalhes por documento</h4>
         <div class="table-wrap">
-          <table id="dash-table">
+          <table id="dash-table" class="table-gradient">
             <thead>
               <tr>
                 <th>Data</th><th>Placa</th><th>Motorista</th>
@@ -318,7 +335,7 @@
   <script>
     const $ = (id)=>document.getElementById(id);
 
-    // Tabs
+    /* Tabs */
     const tabs={novo:{btn:$("tab-novo"),page:$("page-novo")},
                 editar:{btn:$("tab-editar"),page:$("page-editar")},
                 pesq:{btn:$("page-pesquisar")?$("tab-pesquisar"):null,page:$("page-pesquisar")},
@@ -333,9 +350,9 @@
       if(t===tabs.dash) await loadDashboard();
     }));
 
-    // Util
+    /* Utils */
     function genDocId(date = new Date()){
-      const y=date.getFullYear(), m=date.getMonth()+1, d=date.getDate();
+      const y=date.getFullYear(), m=String(date.getMonth()+1).padStart(2,'0'), d=String(date.getDate()).padStart(2,'0');
       const L='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let a=L[Math.floor(Math.random()*26)], b=L[Math.floor(Math.random()*26)];
       while(a===b) b=L[Math.floor(Math.random()*26)];
@@ -343,7 +360,7 @@
     }
     function ts(){ return new Date().toISOString().replace(/[:.]/g,'-'); }
 
-    // Estado "novo"
+    /* Estado "novo" */
     function newDocData(){
       return {id:genDocId(), status:'Em trânsito', data:new Date().toISOString().slice(0,10),
         origem:'RJ', destino:'', placa:'', motorista:'', confOrigem:'', confDestino:'', obs:'', itens:[], photos:[]};
@@ -351,7 +368,7 @@
     let novo = newDocData();
     function resetNovoForm(){ novo=newDocData(); renderNovo(); ensureDefaultsNovo(); }
 
-    // ---- Supabase CRUD ----
+    /* Supabase CRUD */
     async function saveDoc(doc){
       const row = { id:doc.id, data:doc.data||null, placa:doc.placa||null, motorista:doc.motorista||null, status:doc.status||null, payload:doc };
       const { error } = await supa.from('docs').upsert(row);
@@ -378,9 +395,8 @@
       return data;
     }
 
-    // ---- Upload/remoção de fotos (Storage) ----
-    const BUCKET = 'fotos'; // bucket público
-
+    /* Upload/remoção de fotos (Storage) */
+    const BUCKET = 'fotos';
     function blobFromCanvas(img, max=1280, quality=0.85){
       const canvas = document.createElement('canvas');
       const ratio = Math.min(max / img.width, max / img.height, 1);
@@ -388,11 +404,10 @@
       canvas.height = Math.round(img.height * ratio);
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
       return new Promise((resolve, reject) => {
         canvas.toBlob((b) => {
           if (b) return resolve(b);
-          try { // fallback Safari/iOS
+          try {
             const dataUrl = canvas.toDataURL('image/jpeg', quality);
             const byteString = atob(dataUrl.split(',')[1]);
             const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
@@ -413,18 +428,12 @@
       URL.revokeObjectURL(url);
       return blob;
     }
-
     async function uploadPhoto(docId, file){
       try {
         const blob = await compressFile(file);
         const path = `${docId}/${ts()}.jpg`;
-        const { error } = await supa
-          .storage
-          .from(BUCKET)
-          .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
-
+        const { error } = await supa.storage.from(BUCKET).upload(path, blob, { contentType: 'image/jpeg', upsert: false });
         if (error) throw error;
-
         const { data } = supa.storage.from(BUCKET).getPublicUrl(path);
         return { url: data.publicUrl, path };
       } catch (err) {
@@ -443,7 +452,7 @@
       }
     }
 
-    // NOVO: render / handlers
+    /* NOVO: render / handlers */
     function renderNovo(){
       $('novo-doc').textContent=novo.id; $('novo-status').textContent=novo.status;
       $('novo-numdoc').value=novo.id; $('novo-data').value=novo.data||'';
@@ -452,7 +461,6 @@
       $('novo-placa').value=novo.placa||''; $('novo-motorista').value=novo.motorista||'';
       $('novo-conf-origem').value=novo.confOrigem||''; $('novo-conf-destino').value=novo.confDestino||''; $('novo-obs').value=novo.obs||'';
 
-      // fotos
       const wrap=$('novo-fotos'); wrap.innerHTML='';
       (novo.photos||[]).forEach((ph,i)=>{
         const el=document.createElement('div');
@@ -467,7 +475,6 @@
         });
       });
 
-      // itens
       const tbC=document.querySelector('#novo-carreg tbody'), tbD=document.querySelector('#novo-desc tbody'); tbC.innerHTML=''; tbD.innerHTML='';
       novo.itens.forEach(it=>{
         tbC.insertAdjacentHTML('beforeend',
@@ -483,7 +490,6 @@
           <td><span id="n-desc-view-${it.id}">${it.desc||''}</span></td>
           <td><input id="n-rec-${it.id}" type="number" min="0" value="${it.recebida!==''?it.recebida:''}"></td>
           <td><span id="n-diff-${it.id}">${diff}</span></td>
-          <!-- Campo de observações do descarregamento usa obsd se existir, senão obs -->
           <td><input id="n-obsd-${it.id}" value="${typeof it.obsd !== 'undefined' ? it.obsd : (it.obs||'')}"></td>
         </tr>`);
         hookNovoRow(it.id);
@@ -495,15 +501,10 @@
     $('novo-file').addEventListener('change', async (e)=>{
       if(!e.target.files?.length) return;
       for(const f of e.target.files){
-        try {
-          const up = await uploadPhoto(novo.id, f);
-          novo.photos.push(up);
-        } catch (err) {
-          console.warn('Falha ao enviar uma das fotos:', err);
-        }
+        try { const up = await uploadPhoto(novo.id, f); novo.photos.push(up); }
+        catch (err) { console.warn('Falha ao enviar uma das fotos:', err); }
       }
-      e.target.value = '';
-      renderNovo();
+      e.target.value = ''; renderNovo();
     });
 
     function hookNovoRow(id){
@@ -513,17 +514,9 @@
       function recalc(){ const it=novo.itens.find(x=>x.id===id); const diff=(Number(it.recebida||0)-Number(it.qtd||0)); diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateNovoTotals(); }
       desc.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.desc=e.target.value; viewDesc.textContent=it.desc; });
       qtd.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.qtd=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      // Campo observações do carregamento: atualiza apenas it.obs
-      obs.addEventListener('input', e=>{
-        const it=novo.itens.find(x=>x.id===id);
-        it.obs = e.target.value;
-      });
+      obs.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.obs = e.target.value; });
       rec.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.recebida=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      // Campo observações do descarregamento: atualiza apenas it.obsd
-      obsd.addEventListener('input', e=>{
-        const it=novo.itens.find(x=>x.id===id);
-        it.obsd = e.target.value;
-      });
+      obsd.addEventListener('input', e=>{ const it=novo.itens.find(x=>x.id===id); it.obsd = e.target.value; });
       document.querySelector(`[data-rm="${id}"]`)?.addEventListener('click', ()=>{ novo.itens=novo.itens.filter(x=>x.id!==id); renderNovo(); });
     }
     function updateNovoTotals(){
@@ -533,7 +526,6 @@
     }
     $('novo-add-item').addEventListener('click', ()=>{
       const id=genDocId();
-      // Novo item com campos separados para observações de carregamento (obs) e descarregamento (obsd)
       novo.itens.push({id,desc:'',qtd:'',obs:'',obsd:'',recebida:''});
       renderNovo();
     });
@@ -555,7 +547,7 @@
     $('novo-novo').addEventListener('click', resetNovoForm);
     $('novo-imprimir').addEventListener('click', ()=>window.print());
 
-    // EDITAR
+    /* EDITAR */
     let editing=null;
     $('editar-abrir').addEventListener('click', async ()=>{
       const id=$('editar-id').value.trim();
@@ -575,7 +567,6 @@
       $('ed-origem').value=editing.origem||''; $('ed-destino').value=editing.destino||''; $('ed-placa').value=editing.placa||''; $('ed-motorista').value=editing.motorista||'';
       $('ed-conf-origem').value=editing.confOrigem||''; $('ed-conf-destino').value=editing.confDestino||''; $('ed-obs').value=editing.obs||'';
 
-      // fotos
       const wrap=$('ed-fotos'); wrap.innerHTML='';
       (editing.photos||[]).forEach((ph,i)=>{
         const el=document.createElement('div');
@@ -590,7 +581,6 @@
         });
       });
 
-      // itens
       const tbC=document.querySelector('#ed-carreg tbody'), tbD=document.querySelector('#ed-desc tbody'); tbC.innerHTML=''; tbD.innerHTML='';
       (editing.itens||[]).forEach(it=>{
         tbC.insertAdjacentHTML('beforeend',
@@ -617,16 +607,10 @@
     $('ed-file').addEventListener('change', async (e)=>{
       if(!editing || !e.target.files?.length) return;
       for(const f of e.target.files){
-        try {
-          const up = await uploadPhoto(editing.id, f);
-          editing.photos = editing.photos || [];
-          editing.photos.push(up);
-        } catch (err) {
-          console.warn('Falha ao enviar uma das fotos:', err);
-        }
+        try { const up = await uploadPhoto(editing.id, f); (editing.photos=editing.photos||[]).push(up); }
+        catch (err) { console.warn('Falha ao enviar uma das fotos:', err); }
       }
-      e.target.value = '';
-      renderEditar();
+      e.target.value = ''; renderEditar();
     });
 
     function hookEditarRow(id){
@@ -636,17 +620,9 @@
       function recalc(){ const it=editing.itens.find(x=>x.id===id); const diff=(Number(it.recebida||0)-Number(it.qtd||0)); diffEl.textContent=diff; viewDesc.textContent=it.desc||''; updateEditarTotals(); }
       desc.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.desc=e.target.value; viewDesc.textContent=it.desc; });
       qtd.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.qtd=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      // Observações do carregamento: atualiza apenas it.obs
-      obs.addEventListener('input', e=>{
-        const it=editing.itens.find(x=>x.id===id);
-        it.obs = e.target.value;
-      });
+      obs.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.obs = e.target.value; });
       rec.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.recebida=e.target.value===''? '' : Number(e.target.value); recalc(); });
-      // Observações do descarregamento: atualiza apenas it.obsd
-      obsd.addEventListener('input', e=>{
-        const it=editing.itens.find(x=>x.id===id);
-        it.obsd = e.target.value;
-      });
+      obsd.addEventListener('input', e=>{ const it=editing.itens.find(x=>x.id===id); it.obsd = e.target.value; });
       document.querySelector(`[data-rme="${id}"]`)?.addEventListener('click', ()=>{ editing.itens=editing.itens.filter(x=>x.id!==id); renderEditar(); });
     }
     function updateEditarTotals(){
@@ -667,7 +643,30 @@
     });
     $('ed-status').addEventListener('change', e=>{ if(!editing) return; editing.status=e.target.value; $('editar-status').textContent=editing.status; });
 
-    // PESQUISAR
+    /* ========= ÍCONES DE STATUS (JS) =========
+       Aplica a bolinha na coluna "Status" sem mudar a estrutura.
+       Verde: Recebido | Laranja: Em trânsito | Vermelho: Carregando
+    ========================================= */
+    function renderStatusDots(tableEl){
+      try{
+        if(!tableEl || !tableEl.tHead || !tableEl.tBodies.length) return;
+        const ths=[...tableEl.tHead.rows[0].cells];
+        const statusIdx = ths.findIndex(th=>th.textContent.trim().toLowerCase()==='status');
+        if(statusIdx === -1) return;
+        [...tableEl.tBodies[0].rows].forEach(tr=>{
+          const cell = tr.cells[statusIdx];
+          if(!cell) return;
+          const text = (cell.textContent || '').trim();
+          let color = '#9CA3AF'; // fallback cinza
+          if (/recebido/i.test(text)) color = '#16a34a';
+          else if (/(em\s+tr[aâ]nsito|transito)/i.test(text)) color = '#f59e0b';
+          else if (/carregando/i.test(text)) color = '#dc2626';
+          cell.innerHTML = `<span class="status-cell"><span class="status-dot" style="background:${color}"></span>${text}</span>`;
+        });
+      }catch(e){ console.warn('status dots:', e); }
+    }
+
+    /* PESQUISAR */
     $('q-buscar').addEventListener('click', async ()=>{
       const rows = await allDocs({
         id: $('q-doc').value.trim().toUpperCase(),
@@ -686,13 +685,15 @@
         tb.appendChild(tr);
       });
       tb.querySelectorAll('button[data-open]').forEach(b=> b.addEventListener('click', async (e)=>{
-        const id=e.target.getAttribute('data-open'); tabs.editar.btn.click(); $('editar-id').value=id;
+        const id=e.currentTarget.getAttribute('data-open'); tabs.editar.btn.click(); $('editar-id').value=id;
         const doc=await getDoc(id); if(!doc){alert('Documento não encontrado.'); return;}
         editing=doc; $('editar-form').classList.remove('hide'); renderEditar();
       }));
+      // Aplica bolinhas de status na tabela de pesquisa
+      renderStatusDots(document.getElementById('q-table'));
     }
 
-    // DASHBOARD
+    /* DASHBOARD */
     let dashChart=null;
     function sumFromDocs(docs){
       let enviados=0, recebidos=0, quebra=0; const porDia={};
@@ -722,7 +723,6 @@
       const serieEnv=dias.map(d=>agg.porDia[d].env), serieRec=dias.map(d=>agg.porDia[d].rec), serieQbr=dias.map(d=>agg.porDia[d].qbr);
       const ctx=document.getElementById('dash-chart').getContext('2d'); if(dashChart) dashChart.destroy();
 
-      /* ====== GRÁFICO COM LINHAS SUAVES E MONOTÔNICAS ====== */
       dashChart=new Chart(ctx,{
         type:'line',
         data:{
@@ -740,7 +740,6 @@
           scales:{ y:{ beginAtZero:true } }
         }
       });
-      /* ===================================================== */
 
       const tb=document.querySelector('#dash-table tbody'); tb.innerHTML='';
       for(const d of data){
@@ -751,14 +750,15 @@
         tr.innerHTML=`<td>${d.data||''}</td><td>${placa}</td><td>${mot}</td><td>${env}</td><td>${rec}</td><td>${c1}</td><td>${c2}</td><td>${st}</td>`;
         tb.appendChild(tr);
       }
+      // Aplica bolinhas de status na tabela de dashboard
+      renderStatusDots(document.getElementById('dash-table'));
     }
     $('dash-atualizar')?.addEventListener('click', loadDashboard);
 
-    // Init
+    /* Init */
     function ensureDefaultsNovo(){
       if(novo.itens.length === 0){
         const id = genDocId();
-        // Cria item padrão com campos separados para observações de carregamento (obs) e descarregamento (obsd)
         novo.itens.push({ id, desc:'', qtd:'', obs:'', obsd:'', recebida:'' });
         renderNovo();
       }
