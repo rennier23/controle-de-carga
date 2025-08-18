@@ -40,7 +40,15 @@
     }
     .brandbar .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between}
     .logo{display:flex;align-items:center;gap:12px}
-    .logo img{height:38px;width:auto;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));background:transparent}
+    /* === Destaque da logo: cartão branco sobre a faixa azul === */
+    .logo-badge{
+      display:flex;align-items:center;justify-content:center;
+      padding:6px 10px;background:#fff;border-radius:12px;
+      border:1px solid rgba(255,255,255,.65);
+      box-shadow:0 6px 16px rgba(0,0,0,.10);
+    }
+    .logo-badge img{height:38px;width:auto;display:block;filter:none} /* sem filtro para manter as cores da marca */
+
     .logo h1{margin:0;font-size:20px;letter-spacing:.3px;font-weight:700}
     .tagline{margin:0;font-size:12px;opacity:.9;letter-spacing:.2px}
 
@@ -70,6 +78,7 @@
     .btn i{margin-right:4px}
     .btn.ghost{background:#fff;color:var(--primary-dark);border:1px solid var(--primary-dark)}
     .btn.danger{background:var(--danger);color:#fff;border:1px solid var(--danger)}
+    /* garante vermelho no excluir da tela editar */
     #editar-remover{background:var(--danger)!important;color:#fff!important;border:1px solid var(--danger)!important}
 
     .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
@@ -78,8 +87,12 @@
     table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid var(--border);background:#fff;text-align:left;font-size:14px}
     tr:last-child td{border-bottom:none}
-    .table-gradient thead tr{background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%)}
-    .table-gradient thead th{color:#fff;background:transparent;border-bottom:none}
+    .table-gradient thead tr{
+      background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%);
+    }
+    .table-gradient thead th{
+      color:#fff;background:transparent;border-bottom:none;
+    }
     .table-gradient thead th+th{border-left:none}
     .table-gradient{box-shadow:0 6px 12px rgba(20,140,214,.08)}
 
@@ -122,7 +135,10 @@
   <div class="brandbar">
     <div class="row">
       <div class="logo">
-        <img src="https://superfrio.com.br/wp-content/uploads/2018/10/Logo-1-300x180.png" alt="SuperFrio logo"/>
+        <!-- Logo agora com "cartão" branco de destaque -->
+        <span class="logo-badge">
+          <img src="https://superfrio.com.br/wp-content/uploads/2018/10/Logo-1-300x180.png" alt="SuperFrio logo"/>
+        </span>
         <div>
           <h1>SuperFrio – Controle de Carga</h1>
           <p class="tagline">Logística Frigorificada • Carregamento & Descarregamento</p>
@@ -169,6 +185,7 @@
         <div class="g2" style="grid-column:1/-1"><label>Observações</label><input id="novo-obs"/></div>
       </div>
 
+      <!-- Fotos (NOVO) -->
       <h3 style="margin-top:12px"><i class="fa-solid fa-camera"></i> Fotos</h3>
       <div class="actions">
         <input id="novo-file" type="file" accept="image/*" capture="environment" multiple class="hide"/>
@@ -261,23 +278,6 @@
           <div><label>Conferente (descarregamento)</label><input id="ed-conf-destino"/></div>
           <div class="row" style="justify-content:flex-end"><div class="pill">Total recebido: <b id="ed-total-receb">0</b> • Diferença total: <b id="ed-total-diff">0</b></div></div>
         </div>
-
-        <!-- MINI PAINEL DE HISTÓRICO -->
-        <div class="card" style="margin-top:10px">
-          <h4 style="margin:0 0 8px 0"><i class="fa-solid fa-clock-rotate-left"></i> Histórico do documento</h4>
-          <div class="table-wrap">
-            <table id="ed-hist-table" class="table-gradient">
-              <thead>
-                <tr>
-                  <th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Resumo</th>
-                </tr>
-              </thead>
-              <tbody id="ed-hist-body"></tbody>
-            </table>
-          </div>
-          <p class="muted" id="ed-hist-hint" style="margin-top:6px"></p>
-        </div>
-        <!-- FIM HISTÓRICO -->
       </div>
     </section>
 
@@ -369,9 +369,6 @@
       return `${y}${m}${d}${a}${b}`;
     }
     function ts(){ return new Date().toISOString().replace(/[:.]/g,'-'); }
-    function fmtDate(iso){
-      try{ const d=new Date(iso); return d.toLocaleString(); }catch{ return iso||''; }
-    }
 
     /* Estado "novo" */
     function newDocData(){
@@ -381,100 +378,12 @@
     let novo = newDocData();
     function resetNovoForm(){ novo=newDocData(); renderNovo(); ensureDefaultsNovo(); }
 
-    /* ===== Helpers para Histórico ===== */
-    function getUserName() {
-      let name = localStorage.getItem('sf_user_name');
-      if (!name) {
-        name = prompt('Quem está realizando esta operação?');
-        if (name && name.trim()) localStorage.setItem('sf_user_name', name.trim());
-      }
-      return (name && name.trim()) ? name.trim() : 'Anônimo';
-    }
-    function sumItems(payload) {
-      let env=0, rec=0;
-      (payload?.itens||[]).forEach(it=>{
-        env += Number(it.qtd||0);
-        rec += Number(it.recebida||0);
-      });
-      return {env, rec, diff: rec-env};
-    }
-    function buildChanges(prev, next, action) {
-      const p = prev || {};
-      const n = next || {};
-      const sp = sumItems(p), sn = sumItems(n);
-      return {
-        action,
-        fields: {
-          status: [p.status||null, n.status||null],
-          data:   [p.data||null,   n.data||null],
-          origem: [p.origem||null, n.origem||null],
-          destino:[p.destino||null,n.destino||null],
-          placa:  [p.placa||null,  n.placa||null],
-          motorista:[p.motorista||null, n.motorista||null],
-          confOrigem:[p.confOrigem||null, n.confOrigem||null],
-          confDestino:[p.confDestino||null, n.confDestino||null],
-          obs:    [p.obs||null,    n.obs||null],
-        },
-        totals: {
-          enviados: [sp.env, sn.env],
-          recebidos:[sp.rec, sn.rec],
-          diferenca:[sp.diff, sn.diff],
-          itens:    [(p.itens||[]).length, (n.itens||[]).length]
-        }
-      };
-    }
-
-    function summarizeHistoryEntry(changes){
-      let parts=[];
-      try{
-        const st=changes?.fields?.status||[];
-        if(st[0]!==st[1] && (st[0]!==undefined || st[1]!==undefined)){
-          parts.push(`Status: ${st[0]??'–'} → ${st[1]??'–'}`);
-        }
-        const t=changes?.totals;
-        if(t){
-          const [e0,e1]=t.enviados||[0,0];
-          const [r0,r1]=t.recebidos||[0,0];
-          if(e0!==e1) parts.push(`Enviados: ${e0} → ${e1}`);
-          if(r0!==r1) parts.push(`Recebidos: ${r0} → ${r1}`);
-          const [d0,d1]=t.diferenca||[0,0];
-          if(d0!==d1) parts.push(`Diferença: ${d0} → ${d1}`);
-        }
-      }catch{}
-      return parts.length?parts.join(' • '):'—';
-    }
-
-    /* Supabase CRUD (com histórico e 1 alerta só) */
-    async function saveDoc(doc, action='update'){
-      try {
-        let prev = null;
-        if (action === 'update') {
-          const resPrev = await supa.from('docs').select('payload').eq('id', doc.id).maybeSingle();
-          if (resPrev.error) throw resPrev.error;
-          prev = resPrev.data ? resPrev.data.payload : null;
-        }
-
-        const row = {
-          id: doc.id, data: doc.data || null, placa: doc.placa || null,
-          motorista: doc.motorista || null, status: doc.status || null, payload: doc
-        };
-        const { error: upsertErr } = await supa.from('docs').upsert(row);
-        if (upsertErr) throw upsertErr;
-
-        const user_name = getUserName();
-        const changes = buildChanges(prev, doc, action);
-        const { error: histErr } = await supa.from('doc_history').insert({
-          doc_id: doc.id, action, changes, user_name
-        });
-        if (histErr) console.warn('Falha ao inserir histórico:', histErr);
-
-        alert(action === 'create' ? ('Salvo! Nº ' + doc.id) : 'Atualizado!');
-        return true;
-      } catch (e) {
-        console.error(e);
-        alert('Erro ao salvar: ' + (e?.message || e));
-        return false;
-      }
+    /* Supabase CRUD */
+    async function saveDoc(doc){
+      const row = { id:doc.id, data:doc.data||null, placa:doc.placa||null, motorista:doc.motorista||null, status:doc.status||null, payload:doc };
+      const { error } = await supa.from('docs').upsert(row);
+      if(error){ console.error(error); alert('Erro ao salvar: '+error.message); }
+      else { alert('Salvo! Nº '+doc.id); }
     }
     async function getDoc(id){
       const { data, error } = await supa.from('docs').select('payload').eq('id', id).maybeSingle();
@@ -644,9 +553,7 @@
       });
     });
     $('novo-status-select').addEventListener('change', e=>{ novo.status=e.target.value; $('novo-status').textContent=novo.status; });
-    $('novo-salvar').addEventListener('click', async ()=>{
-      await saveDoc(novo, 'create');
-    });
+    $('novo-salvar').addEventListener('click', async ()=>{ await saveDoc(novo); });
     $('novo-novo').addEventListener('click', resetNovoForm);
     $('novo-imprimir').addEventListener('click', ()=>window.print());
 
@@ -656,7 +563,7 @@
       const id=$('editar-id').value.trim();
       const doc=await getDoc(id);
       if(!doc){alert('Documento não encontrado.'); return;}
-      editing=doc; $('editar-form').classList.remove('hide'); renderEditar(); await loadHistory(editing.id);
+      editing=doc; $('editar-form').classList.remove('hide'); renderEditar();
     });
     $('editar-remover').addEventListener('click', async ()=>{
       const id=$('editar-id').value.trim(); if(!id) return;
@@ -733,13 +640,7 @@
       const tr=(editing.itens||[]).reduce((a,b)=>a+(Number(b.recebida)||0),0);
       $('ed-total-carreg').textContent=tc; $('ed-total-receb').textContent=tr; $('ed-total-diff').textContent=tr-tc;
     }
-
-    // Salvar com recarregamento do histórico
-    $('editar-salvar').addEventListener('click', async ()=>{
-      if(!editing) return;
-      const ok = await saveDoc(editing, 'update');
-      if(ok) await loadHistory(editing.id);
-    });
+    $('editar-salvar').addEventListener('click', async ()=>{ if(!editing) return; await saveDoc(editing); alert('Atualizado!'); });
     $('editar-imprimir').addEventListener('click', ()=>window.print());
     ['ed-data','ed-origem','ed-destino','ed-placa','ed-motorista','ed-conf-origem','ed-conf-destino','ed-obs'].forEach(id=>{
       $(id).addEventListener('input', e=>{
@@ -772,36 +673,6 @@
       }catch(e){ console.warn('status dots:', e); }
     }
 
-    /* ========== Histórico: carregar e desenhar ========== */
-    async function loadHistory(docId){
-      try{
-        const { data, error } = await supa
-          .from('doc_history')
-          .select('created_at,user_name,action,changes')
-          .eq('doc_id', docId)
-          .order('created_at', { ascending:false })
-          .limit(50);
-        if(error) throw error;
-
-        const body = $('ed-hist-body'); body.innerHTML='';
-        if(!data || !data.length){
-          $('ed-hist-hint').textContent = 'Sem eventos registrados ainda para este documento.';
-          return;
-        }
-        $('ed-hist-hint').textContent = '';
-        for(const row of data){
-          const tr = document.createElement('tr');
-          const resumo = summarizeHistoryEntry(row.changes);
-          const acLabel = row.action==='create' ? 'Criação' : row.action==='update' ? 'Atualização' : row.action;
-          tr.innerHTML = `<td>${fmtDate(row.created_at)}</td><td>${row.user_name||'—'}</td><td>${acLabel}</td><td>${resumo}</td>`;
-          body.appendChild(tr);
-        }
-      }catch(e){
-        console.error('loadHistory', e);
-        $('ed-hist-hint').textContent = 'Não foi possível carregar o histórico.';
-      }
-    }
-
     /* PESQUISAR */
     $('q-buscar').addEventListener('click', async ()=>{
       const rows = await allDocs({
@@ -823,7 +694,7 @@
       tb.querySelectorAll('button[data-open]').forEach(b=> b.addEventListener('click', async (e)=>{
         const id=e.currentTarget.getAttribute('data-open'); tabs.editar.btn.click(); $('editar-id').value=id;
         const doc=await getDoc(id); if(!doc){alert('Documento não encontrado.'); return;}
-        editing=doc; $('editar-form').classList.remove('hide'); renderEditar(); await loadHistory(editing.id);
+        editing=doc; $('editar-form').classList.remove('hide'); renderEditar();
       }));
       renderStatusDots(document.getElementById('q-table'));
     }
@@ -842,7 +713,7 @@
         }
       } return {enviados,recebidos,quebra,porDia};
     }
-    function totalLinha(payload){ let env=0, rec=0; (payload?.itens||[]).forEach(it=>{env+=Number(it.qtd||0); rec+=Number(it.recebida||0);}); return {env,rec}; }
+    function totalLinha(payload){ let env=0, rec=0; (payload?.itens||[]).forEach(it=>{env+=Number(it.qtd||0); rec+=Number(it.recebida)||0;}); return {env,rec}; }
 
     async function loadDashboard(){
       const de=$('dash-de').value, ate=$('dash-ate').value;
