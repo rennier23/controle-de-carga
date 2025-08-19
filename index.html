@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+  <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = "https://humurozsimozypajncsv.supabase.co";
@@ -8,8 +9,10 @@
     window.supa = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <meta charset="utf-8"/>
@@ -37,26 +40,24 @@
     }
     .brandbar .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between}
     .logo{display:flex;align-items:center;gap:12px}
-    /* INÍCIO DA MUDANÇA SOLICITADA */
-    .logo-container {
-      background-color: white;
-      border-radius: 10px;
-      padding: 5px;
-      display: flex;
-      align-items: center;
+    /* Destaque branco atrás da logo */
+    .logo-badge{
+      display:flex;align-items:center;justify-content:center;
+      padding:6px 10px;background:#fff;border-radius:12px;
+      border:1px solid rgba(255,255,255,.65);
+      box-shadow:0 6px 16px rgba(0,0,0,.10);
     }
-    /* FIM DA MUDANÇA SOLICITADA */
-    .logo img{height:38px;width:auto;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));background:transparent}
+    .logo-badge img{height:38px;width:auto;display:block}
     .logo h1{margin:0;font-size:20px;letter-spacing:.3px;font-weight:700}
     .tagline{margin:0;font-size:12px;opacity:.9;letter-spacing:.2px}
 
     /* Nav pills */
-    nav{display:flex;gap:10px;flex-wrap:wrap}
+    nav{display:flex;gap:10px;flex-wrap:wrap;max-width:100%;overflow:auto;-webkit-overflow-scrolling:touch}
     nav button{
       border:1px solid rgba(255,255,255,.55);
       background:rgba(255,255,255,.12);
       color:#fff;padding:8px 12px;border-radius:12px;cursor:pointer;
-      backdrop-filter:blur(2px);display:flex;align-items:center;gap:6px;font-weight:600;
+      backdrop-filter:blur(2px);display:flex;align-items:center;gap:6px;font-weight:600;white-space:nowrap
     }
     nav button.active{background:#fff;color:var(--primary-dark);border-color:#fff}
     nav button i{margin-right:2px}
@@ -67,12 +68,13 @@
     input,textarea,select{
       width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;
       font-size:14px;background:#fff;outline:none;box-shadow:0 0 0 0 rgba(0,0,0,0);
+      -webkit-tap-highlight-color:transparent;
     }
     input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
     textarea{min-height:90px;resize:vertical}
     .grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
     .actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{background:var(--primary-dark);color:#fff;border:none;border-radius:10px;padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600}
+    .btn{background:var(--primary-dark);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600}
     .btn i{margin-right:4px}
     .btn.ghost{background:#fff;color:var(--primary-dark);border:1px solid var(--primary-dark)}
     .btn.danger{background:var(--danger);color:#fff;border:1px solid var(--danger)}
@@ -80,16 +82,20 @@
 
     .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
 
-    /* Tabelas com head em degradê contínuo */
+    /* Tabelas */
     table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid var(--border);background:#fff;text-align:left;font-size:14px}
     tr:last-child td{border-bottom:none}
-    .table-gradient thead tr{background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%)}
-    .table-gradient thead th{color:#fff;background:transparent;border-bottom:none}
+    .table-gradient thead tr{
+      background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%);
+    }
+    .table-gradient thead th{
+      color:#fff;background:transparent;border-bottom:none;
+    }
     .table-gradient thead th+th{border-left:none}
     .table-gradient{box-shadow:0 6px 12px rgba(20,140,214,.08)}
 
-    .table-wrap{overflow:auto}
+    .table-wrap{overflow:auto;-webkit-overflow-scrolling:touch}
     .muted{color:var(--muted);font-size:12px}
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .hide{display:none !important}
@@ -112,25 +118,76 @@
 
     h3 i, h4 i{color:var(--primary-dark);margin-right:6px}
 
-    /* ====== ÍCONES DE STATUS (apenas visual) ====== */
+    /* Ícones de status */
     .status-cell{display:inline-flex;align-items:center;gap:8px;font-weight:600}
     .status-dot{width:10px;height:10px;border-radius:50%}
 
+    /* ========= Responsive ========= */
+    /* Tablets (<= 1024px) */
+    @media (max-width:1024px){
+      .wrap{padding:14px}
+      .kpi .value{font-size:26px}
+      th,td{padding:9px}
+      .logo h1{font-size:18px}
+    }
+
+    /* Tablets/Phones médios (<= 860px) */
     @media (max-width:860px){
       .g3{grid-template-columns:1fr}
       .g2{grid-template-columns:1fr}
       .kpis{grid-template-columns:1fr}
+      .logo-badge img{height:34px}
+      .logo h1{font-size:17px}
+      .tagline{font-size:11px}
+      th,td{font-size:13px}
     }
-    @media print{.brandbar,nav,.actions,.muted,.hide-on-print{display:none!important};.wrap{gap:6px;padding:0 10px}}
+
+    /* Phones (<= 640px) */
+    @media (max-width:640px){
+      .brandbar{padding:12px}
+      .brandbar .row{gap:10px}
+      .logo{gap:10px}
+      .logo-badge{padding:5px 8px;border-radius:10px}
+      .logo-badge img{height:30px}
+      .logo h1{font-size:16px}
+      .tagline{font-size:10.5px}
+      .wrap{padding:12px}
+      .card{padding:12px;border-radius:14px}
+      .btn{padding:10px 12px}
+      .actions .btn{flex:1}
+      th,td{padding:8px}
+      table{border-radius:12px}
+      /* evita quebra feia e facilita rolagem horizontal */
+      table th, table td{white-space:nowrap}
+    }
+
+    /* Phones pequenos (<= 480px) */
+    @media (max-width:480px){
+      .brandbar .row{flex-direction:column;align-items:flex-start}
+      nav{width:100%}
+      nav button{padding:8px 10px}
+      .pill{font-size:11.5px}
+      .btn{width:100%}
+      label{font-size:12.5px}
+      input,textarea,select{font-size:15px}
+      .kpi{padding:14px}
+      .kpi .value{font-size:24px}
+      th,td{font-size:12.5px}
+    }
+
+    @media print{
+      .brandbar,nav,.actions,.muted,.hide-on-print{display:none!important}
+      .wrap{gap:6px;padding:0 10px}
+    }
   </style>
 </head>
 <body>
   <div class="brandbar">
     <div class="row">
       <div class="logo">
-        <div class="logo-container">
+        <span class="logo-badge">
           <img src="https://superfrio.com.br/wp-content/uploads/2018/10/Logo-1-300x180.png" alt="SuperFrio logo"/>
-        </div>
+        </span>
         <div>
           <h1>SuperFrio – Controle de Carga</h1>
           <p class="tagline">Logística Frigorificada • Carregamento & Descarregamento</p>
@@ -146,6 +203,7 @@
   </div>
 
   <div class="wrap">
+    <!-- NOVO -->
     <section id="page-novo" class="card">
       <div class="row" style="justify-content:space-between">
         <div class="pill">Documento: <b id="novo-doc"></b> • Status: <b id="novo-status"></b></div>
@@ -205,6 +263,7 @@
       </div>
     </section>
 
+    <!-- EDITAR -->
     <section id="page-editar" class="card hide">
       <div class="row">
         <input id="editar-id" placeholder="Digite nº do documento…"/>
@@ -268,23 +327,20 @@
           <div class="row" style="justify-content:flex-end"><div class="pill">Total recebido: <b id="ed-total-receb">0</b> • Diferença total: <b id="ed-total-diff">0</b></div></div>
         </div>
 
-        <div class="card" style="margin-top:10px">
-          <h4 style="margin:0 0 8px 0"><i class="fa-solid fa-clock-rotate-left"></i> Histórico do documento</h4>
-          <div class="table-wrap">
-            <table id="ed-hist-table" class="table-gradient">
-              <thead>
-                <tr>
-                  <th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Resumo</th>
-                </tr>
-              </thead>
-              <tbody id="ed-hist-body"></tbody>
-            </table>
-          </div>
-          <p class="muted" id="ed-hist-hint" style="margin-top:6px"></p>
+        <!-- Histórico (mini painel) -->
+        <h3 style="margin-top:12px"><i class="fa-solid fa-clock-rotate-left"></i> Histórico do documento</h3>
+        <div class="table-wrap">
+          <table id="hist-table" class="table-gradient">
+            <thead>
+              <tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Resumo</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
-        </div>
+      </div>
     </section>
 
+    <!-- PESQUISAR -->
     <section id="page-pesquisar" class="card hide">
       <div class="grid g3">
         <div><label>Nº Documento</label><input id="q-doc"/></div>
@@ -303,6 +359,7 @@
       </div>
     </section>
 
+    <!-- DASHBOARD -->
     <section id="page-dash" class="card hide">
       <div class="row" style="justify-content:space-between">
         <h3 style="margin:0"><i class="fa-solid fa-chart-pie"></i> Dashboard</h3>
@@ -371,9 +428,6 @@
       return `${y}${m}${d}${a}${b}`;
     }
     function ts(){ return new Date().toISOString().replace(/[:.]/g,'-'); }
-    function fmtDate(iso){
-      try{ const d=new Date(iso); return d.toLocaleString(); }catch{ return iso||''; }
-    }
 
     /* Estado "novo" */
     function newDocData(){
@@ -383,100 +437,12 @@
     let novo = newDocData();
     function resetNovoForm(){ novo=newDocData(); renderNovo(); ensureDefaultsNovo(); }
 
-    /* ===== Helpers para Histórico ===== */
-    function getUserName() {
-      let name = localStorage.getItem('sf_user_name');
-      if (!name) {
-        name = prompt('Quem está realizando esta operação?');
-        if (name && name.trim()) localStorage.setItem('sf_user_name', name.trim());
-      }
-      return (name && name.trim()) ? name.trim() : 'Anônimo';
-    }
-    function sumItems(payload) {
-      let env=0, rec=0;
-      (payload?.itens||[]).forEach(it=>{
-        env += Number(it.qtd||0);
-        rec += Number(it.recebida||0);
-      });
-      return {env, rec, diff: rec-env};
-    }
-    function buildChanges(prev, next, action) {
-      const p = prev || {};
-      const n = next || {};
-      const sp = sumItems(p), sn = sumItems(n);
-      return {
-        action,
-        fields: {
-          status: [p.status||null, n.status||null],
-          data:   [p.data||null,   n.data||null],
-          origem: [p.origem||null, n.origem||null],
-          destino:[p.destino||null,n.destino||null],
-          placa:  [p.placa||null,  n.placa||null],
-          motorista:[p.motorista||null, n.motorista||null],
-          confOrigem:[p.confOrigem||null, n.confOrigem||null],
-          confDestino:[p.confDestino||null, n.confDestino||null],
-          obs:    [p.obs||null,    n.obs||null],
-        },
-        totals: {
-          enviados: [sp.env, sn.env],
-          recebidos:[sp.rec, sn.rec],
-          diferenca:[sp.diff, sn.diff],
-          itens:    [(p.itens||[]).length, (n.itens||[]).length]
-        }
-      };
-    }
-
-    function summarizeHistoryEntry(changes){
-      let parts=[];
-      try{
-        const st=changes?.fields?.status||[];
-        if(st[0]!==st[1] && (st[0]!==undefined || st[1]!==undefined)){
-          parts.push(`Status: ${st[0]??'–'} → ${st[1]??'–'}`);
-        }
-        const t=changes?.totals;
-        if(t){
-          const [e0,e1]=t.enviados||[0,0];
-          const [r0,r1]=t.recebidos||[0,0];
-          if(e0!==e1) parts.push(`Enviados: ${e0} → ${e1}`);
-          if(r0!==r1) parts.push(`Recebidos: ${r0} → ${r1}`);
-          const [d0,d1]=t.diferenca||[0,0];
-          if(d0!==d1) parts.push(`Diferença: ${d0} → ${d1}`);
-        }
-      }catch{}
-      return parts.length?parts.join(' • '):'—';
-    }
-
-    /* Supabase CRUD (com histórico e 1 alerta só) */
-    async function saveDoc(doc, action='update'){
-      try {
-        let prev = null;
-        if (action === 'update') {
-          const resPrev = await supa.from('docs').select('payload').eq('id', doc.id).maybeSingle();
-          if (resPrev.error) throw resPrev.error;
-          prev = resPrev.data ? resPrev.data.payload : null;
-        }
-
-        const row = {
-          id: doc.id, data: doc.data || null, placa: doc.placa || null,
-          motorista: doc.motorista || null, status: doc.status || null, payload: doc
-        };
-        const { error: upsertErr } = await supa.from('docs').upsert(row);
-        if (upsertErr) throw upsertErr;
-
-        const user_name = getUserName();
-        const changes = buildChanges(prev, doc, action);
-        const { error: histErr } = await supa.from('doc_history').insert({
-          doc_id: doc.id, action, changes, user_name
-        });
-        if (histErr) console.warn('Falha ao inserir histórico:', histErr);
-
-        alert(action === 'create' ? ('Salvo! Nº ' + doc.id) : 'Atualizado!');
-        return true;
-      } catch (e) {
-        console.error(e);
-        alert('Erro ao salvar: ' + (e?.message || e));
-        return false;
-      }
+    /* Supabase CRUD */
+    async function saveDoc(doc){
+      const row = { id:doc.id, data:doc.data||null, placa:doc.placa||null, motorista:doc.motorista||null, status:doc.status||null, payload:doc };
+      const { error } = await supa.from('docs').upsert(row);
+      if(error){ console.error(error); alert('Erro ao salvar: '+error.message); }
+      else { alert('Salvo! Nº '+doc.id); }
     }
     async function getDoc(id){
       const { data, error } = await supa.from('docs').select('payload').eq('id', id).maybeSingle();
@@ -555,7 +521,81 @@
       }
     }
 
-    /* NOVO: render / handlers */
+    /* ======= HISTÓRICO ======= */
+    function getUserName(){
+      let name = localStorage.getItem('sf_user_name') || '';
+      if(!name){
+        name = (prompt('Seu nome (para registrar no histórico):') || '').trim();
+        if(!name) name = 'Operador';
+        localStorage.setItem('sf_user_name', name);
+      }
+      return name;
+    }
+    async function logHistory(docId, action, changes){
+      try{
+        const user = getUserName();
+        await supa.from('doc_history').insert({ doc_id:docId, action, changes, user_name:user });
+      }catch(e){
+        console.warn('Falha ao registrar histórico:', e?.message||e);
+      }
+    }
+    function summarizeDoc(doc){
+      const fields = (({status,data,origem,destino,placa,motorista,confOrigem,confDestino,obs})=>({status,data,origem,destino,placa,motorista,confOrigem,confDestino,obs}))(doc||{});
+      let env=0, rec=0;
+      (doc?.itens||[]).forEach(it=>{ env+=Number(it.qtd||0); rec+=Number(it.recebida||0); });
+      return {fields, totals:{enviados:env, recebidos:rec, diff:rec-env}};
+    }
+    function diffDocs(before, after){
+      const keys=['status','data','origem','destino','placa','motorista','confOrigem','confDestino','obs'];
+      const changed={};
+      keys.forEach(k=>{
+        if((before?.[k]||'') !== (after?.[k]||'')) changed[k]={de:before?.[k]||'', para:after?.[k]||''};
+      });
+      let envB=0, recB=0, envA=0, recA=0;
+      (before?.itens||[]).forEach(it=>{ envB+=Number(it.qtd||0); recB+=Number(it.recebida||0); });
+      (after?.itens||[]).forEach(it=>{ envA+=Number(it.qtd||0); recA+=Number(it.recebida||0); });
+      if(envB!==envA || recB!==recA){
+        changed['totais']={de:{enviados:envB, recebidos:recB, diff:recB-envB}, para:{enviados:envA, recebidos:recA, diff:recA-envA}};
+      }
+      return changed;
+    }
+    async function loadHistory(docId){
+      const tb=document.querySelector('#hist-table tbody');
+      if(!tb) return;
+      tb.innerHTML='<tr><td colspan="4">Carregando…</td></tr>';
+      const { data, error } = await supa.from('doc_history')
+        .select('created_at,user_name,action,changes')
+        .eq('doc_id', docId).order('created_at',{ascending:false});
+      if(error){ console.error(error); tb.innerHTML='<tr><td colspan="4">Erro ao carregar histórico.</td></tr>'; return; }
+      if(!data?.length){ tb.innerHTML='<tr><td colspan="4">Sem registros.</td></tr>'; return; }
+      tb.innerHTML='';
+      for(const r of data){
+        const when = new Date(r.created_at).toLocaleString();
+        const act = r.action;
+        const user = r.user_name || '-';
+        let resumo = '';
+        if(act==='create'){
+          const t=r.changes?.totals||{};
+          resumo = `Criado (env:${t.enviados??0} • rec:${t.recebidos??0})`;
+        }else if(act==='update'){
+          const ch=r.changes||{};
+          const campos = Object.keys(ch).filter(k=>k!=='totais');
+          const tot = ch.totais;
+          resumo = (campos.length? `Campos: ${campos.join(', ')}` : '');
+          if(tot){
+            resumo += (resumo? ' • ' : '') + `Totais: ${tot.de.enviados}->${tot.para.enviados} / ${tot.de.recebidos}->${tot.para.recebidos}`;
+          }
+          if(!resumo) resumo='Edição';
+        }else{
+          resumo = 'Evento';
+        }
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${when}</td><td>${user}</td><td>${act}</td><td>${resumo}</td>`;
+        tb.appendChild(tr);
+      }
+    }
+
+    /* NOVO */
     function renderNovo(){
       $('novo-doc').textContent=novo.id; $('novo-status').textContent=novo.status;
       $('novo-numdoc').value=novo.id; $('novo-data').value=novo.data||'';
@@ -647,19 +687,24 @@
     });
     $('novo-status-select').addEventListener('change', e=>{ novo.status=e.target.value; $('novo-status').textContent=novo.status; });
     $('novo-salvar').addEventListener('click', async ()=>{
-      await saveDoc(novo, 'create');
+      await saveDoc(novo);
+      await logHistory(novo.id, 'create', summarizeDoc(novo));
     });
     $('novo-novo').addEventListener('click', resetNovoForm);
     $('novo-imprimir').addEventListener('click', ()=>window.print());
 
     /* EDITAR */
-    let editing=null;
+    let editing=null, editingSnapshot=null;
+
     $('editar-abrir').addEventListener('click', async ()=>{
       const id=$('editar-id').value.trim();
       const doc=await getDoc(id);
       if(!doc){alert('Documento não encontrado.'); return;}
-      editing=doc; $('editar-form').classList.remove('hide'); renderEditar(); await loadHistory(editing.id);
+      editing=doc; editingSnapshot=JSON.parse(JSON.stringify(doc));
+      $('editar-form').classList.remove('hide'); renderEditar();
+      loadHistory(id);
     });
+
     $('editar-remover').addEventListener('click', async ()=>{
       const id=$('editar-id').value.trim(); if(!id) return;
       if(confirm('Excluir documento '+id+'?')){ await delDoc(id); $('editar-form').classList.add('hide'); }
@@ -674,8 +719,7 @@
 
       const wrap=$('ed-fotos'); wrap.innerHTML='';
       (editing.photos||[]).forEach((ph,i)=>{
-        const el=document.createElement('div');
-        el.className='thumb';
+        const el=document.createElement('div'); el.className='thumb';
         el.innerHTML=`<img src="${ph.url}" alt="foto"><button data-i="${i}">Excluir</button><a href="${ph.url}" target="_blank">abrir</a>`;
         wrap.appendChild(el);
       });
@@ -735,12 +779,14 @@
       const tr=(editing.itens||[]).reduce((a,b)=>a+(Number(b.recebida)||0),0);
       $('ed-total-carreg').textContent=tc; $('ed-total-receb').textContent=tr; $('ed-total-diff').textContent=tr-tc;
     }
-
-    // Salvar com recarregamento do histórico
     $('editar-salvar').addEventListener('click', async ()=>{
       if(!editing) return;
-      const ok = await saveDoc(editing, 'update');
-      if(ok) await loadHistory(editing.id);
+      await saveDoc(editing);
+      const changes = diffDocs(editingSnapshot, editing);
+      await logHistory(editing.id, 'update', changes);
+      editingSnapshot = JSON.parse(JSON.stringify(editing));
+      await loadHistory(editing.id);
+      alert('Atualizado!');
     });
     $('editar-imprimir').addEventListener('click', ()=>window.print());
     ['ed-data','ed-origem','ed-destino','ed-placa','ed-motorista','ed-conf-origem','ed-conf-destino','ed-obs'].forEach(id=>{
@@ -754,7 +800,7 @@
     });
     $('ed-status').addEventListener('change', e=>{ if(!editing) return; editing.status=e.target.value; $('editar-status').textContent=editing.status; });
 
-    /* ========= ÍCONES DE STATUS (JS) ========= */
+    /* ÍCONES DE STATUS nas tabelas */
     function renderStatusDots(tableEl){
       try{
         if(!tableEl || !tableEl.tHead || !tableEl.tBodies.length) return;
@@ -774,36 +820,6 @@
       }catch(e){ console.warn('status dots:', e); }
     }
 
-    /* ========== Histórico: carregar e desenhar ========== */
-    async function loadHistory(docId){
-      try{
-        const { data, error } = await supa
-          .from('doc_history')
-          .select('created_at,user_name,action,changes')
-          .eq('doc_id', docId)
-          .order('created_at', { ascending:false })
-          .limit(50);
-        if(error) throw error;
-
-        const body = $('ed-hist-body'); body.innerHTML='';
-        if(!data || !data.length){
-          $('ed-hist-hint').textContent = 'Sem eventos registrados ainda para este documento.';
-          return;
-        }
-        $('ed-hist-hint').textContent = '';
-        for(const row of data){
-          const tr = document.createElement('tr');
-          const resumo = summarizeHistoryEntry(row.changes);
-          const acLabel = row.action==='create' ? 'Criação' : row.action==='update' ? 'Atualização' : row.action;
-          tr.innerHTML = `<td>${fmtDate(row.created_at)}</td><td>${row.user_name||'—'}</td><td>${acLabel}</td><td>${resumo}</td>`;
-          body.appendChild(tr);
-        }
-      }catch(e){
-        console.error('loadHistory', e);
-        $('ed-hist-hint').textContent = 'Não foi possível carregar o histórico.';
-      }
-    }
-
     /* PESQUISAR */
     $('q-buscar').addEventListener('click', async ()=>{
       const rows = await allDocs({
@@ -819,13 +835,15 @@
       rows.forEach(d=>{
         const tr=document.createElement('tr');
         tr.innerHTML=`<td>${d.id}</td><td>${d.data||''}</td><td>${d.placa||''}</td><td>${d.motorista||''}</td><td>${d.status||''}</td>
-                     <td><button class='btn ghost' data-open='${d.id}'><i class="fa-solid fa-pen-to-square"></i> Editar</button></td>`;
+                      <td><button class='btn ghost' data-open='${d.id}'><i class="fa-solid fa-pen-to-square"></i> Editar</button></td>`;
         tb.appendChild(tr);
       });
       tb.querySelectorAll('button[data-open]').forEach(b=> b.addEventListener('click', async (e)=>{
         const id=e.currentTarget.getAttribute('data-open'); tabs.editar.btn.click(); $('editar-id').value=id;
         const doc=await getDoc(id); if(!doc){alert('Documento não encontrado.'); return;}
-        editing=doc; $('editar-form').classList.remove('hide'); renderEditar(); await loadHistory(editing.id);
+        editing=doc; editingSnapshot=JSON.parse(JSON.stringify(doc));
+        $('editar-form').classList.remove('hide'); renderEditar();
+        loadHistory(id);
       }));
       renderStatusDots(document.getElementById('q-table'));
     }
@@ -871,7 +889,7 @@
           ]
         },
         options:{
-          responsive:true,
+          responsive:true, maintainAspectRatio:false,
           plugins:{ legend:{position:'top'} },
           interaction:{mode:'index',intersect:false},
           scales:{ y:{ beginAtZero:true } }
