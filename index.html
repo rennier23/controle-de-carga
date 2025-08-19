@@ -11,7 +11,6 @@
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-  <!-- Plugin de rótulos -->
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
   <!-- Font Awesome -->
@@ -34,7 +33,6 @@
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Arial,sans-serif}
     .wrap{max-width:1100px;margin:0 auto;padding:16px 18px 24px;display:flex;flex-direction:column;gap:14px}
 
-    /* Top bar */
     .brandbar{
       background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 45%,#1EC7E6 100%);
       padding:14px 18px;color:#fff;border-bottom:1px solid #dbeafe;
@@ -47,7 +45,6 @@
     .logo h1{margin:0;font-size:20px;letter-spacing:.3px;font-weight:700}
     .tagline{margin:0;font-size:12px;opacity:.9;letter-spacing:.2px}
 
-    /* Nav pills */
     nav{display:flex;gap:10px;flex-wrap:wrap;max-width:100%;overflow:auto;-webkit-overflow-scrolling:touch}
     nav button{
       border:1px solid rgba(255,255,255,.55);
@@ -58,32 +55,25 @@
     nav button.active{background:#fff;color:var(--primary-dark);border-color:#fff}
     nav button i{margin-right:2px}
 
-    /* Card + fields */
     .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
     label{display:block;font-size:13px;margin-bottom:6px;color:#0f172a}
-    input,textarea,select{
-      width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;
-      font-size:14px;background:#fff;outline:none;box-shadow:0 0 0 0 rgba(0,0,0,0);-webkit-tap-highlight-color:transparent;
-    }
+    input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;outline:none}
     input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)}
     textarea{min-height:90px;resize:vertical}
     .grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
     .actions{display:flex;gap:10px;flex-wrap:wrap}
     .btn{background:var(--primary-dark);color:#fff;border:none;border-radius:10px;padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600}
-    .btn i{margin-right:4px}
     .btn.ghost{background:#fff;color:var(--primary-dark);border:1px solid var(--primary-dark)}
     .btn.danger{background:var(--danger);color:#fff;border:1px solid var(--danger)}
     #editar-remover{background:var(--danger)!important;color:#fff!important;border:1px solid var(--danger)!important}
 
-    .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;color:#0f172a;background:#f8fafc}
+    .pill{border:1px solid var(--border);border-radius:999px;padding:6px 10px;font-size:12px;background:#f8fafc}
 
-    /* Tabelas */
     table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:14px;overflow:hidden}
     th,td{padding:10px;border-bottom:1px solid var(--border);background:#fff;text-align:left;font-size:14px}
     tr:last-child td{border-bottom:none}
     .table-gradient thead tr{background:linear-gradient(90deg,#0A6FB9 0%,#148CD6 50%,#1EC7E6 100%)}
     .table-gradient thead th{color:#fff;background:transparent;border-bottom:none}
-    .table-gradient thead th+th{border-left:none}
     .table-gradient{box-shadow:0 6px 12px rgba(20,140,214,.08)}
 
     .table-wrap{overflow:auto;-webkit-overflow-scrolling:touch}
@@ -91,7 +81,6 @@
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .hide{display:none !important}
 
-    /* KPI CARDS */
     .kpis{display:grid;gap:12px;grid-template-columns:repeat(3,1fr)}
     .kpi{border-radius:12px;padding:16px;border:1px solid var(--border);background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.04)}
     .kpi--blue{background:linear-gradient(180deg,var(--info-100),#fff)!important;border-color:var(--info-300)!important}
@@ -100,7 +89,6 @@
     .kpi .title{color:var(--muted);font-size:13px;margin-bottom:8px}
     .kpi .value{font-size:30px;font-weight:800}
 
-    /* Fotos */
     .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
     .thumb{position:relative;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#fff}
     .thumb img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:1/1}
@@ -108,12 +96,9 @@
     .thumb a{position:absolute;left:6px;bottom:6px;background:#ffffffd9;border:1px solid var(--border);border-radius:6px;padding:3px 6px;font-size:11px;text-decoration:none;color:#0b3b66}
 
     h3 i, h4 i{color:var(--primary-dark);margin-right:6px}
-
-    /* Ícones de status */
     .status-cell{display:inline-flex;align-items:center;gap:8px;font-weight:600}
     .status-dot{width:10px;height:10px;border-radius:50%}
 
-    /* ========= Responsive ========= */
     @media (max-width:1024px){ .wrap{padding:14px} .kpi .value{font-size:26px} th,td{padding:9px} .logo h1{font-size:18px} }
     @media (max-width:860px){ .g3{grid-template-columns:1fr} .g2{grid-template-columns:1fr} .kpis{grid-template-columns:1fr} .logo-badge img{height:34px} .logo h1{font-size:17px} .tagline{font-size:11px} th,td{font-size:13px} }
     @media (max-width:640px){
@@ -281,13 +266,10 @@
           <div class="row" style="justify-content:flex-end"><div class="pill">Total recebido: <b id="ed-total-receb">0</b> • Diferença total: <b id="ed-total-diff">0</b></div></div>
         </div>
 
-        <!-- Histórico -->
         <h3 style="margin-top:12px"><i class="fa-solid fa-clock-rotate-left"></i> Histórico do documento</h3>
         <div class="table-wrap">
           <table id="hist-table" class="table-gradient">
-            <thead>
-              <tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Resumo</th></tr>
-            </thead>
+            <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Resumo</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -420,7 +402,7 @@
       return data;
     }
 
-    /* Upload/remoção de fotos (Storage) */
+    /* Upload de fotos */
     const BUCKET = 'fotos';
     function blobFromCanvas(img, max=1280, quality=0.85){
       const canvas = document.createElement('canvas');
@@ -756,7 +738,7 @@
     });
     $('ed-status').addEventListener('change', e=>{ if(!editing) return; editing.status=e.target.value; $('editar-status').textContent=editing.status; });
 
-    /* ÍCONES DE STATUS nas tabelas */
+    /* Ícones de Status nas tabelas */
     function renderStatusDots(tableEl){
       try{
         if(!tableEl || !tableEl.tHead || !tableEl.tBodies.length) return;
@@ -805,36 +787,21 @@
       const dias=Object.keys(agg.porDia).sort();
       const serieEnv=dias.map(d=>agg.porDia[d].env), serieRec=dias.map(d=>agg.porDia[d].rec), serieQbr=dias.map(d=>agg.porDia[d].qbr);
 
-      // padding maior para evitar colisão no topo
       const maxY = Math.max(0, ...serieEnv, ...serieRec, ...serieQbr);
       const pad = Math.max(60, Math.ceil(maxY * 0.35));
       const suggestedMax = maxY + pad;
 
-      if (Chart.registry.plugins.get('datalabels') == null) {
-        Chart.register(ChartDataLabels);
-      }
+      if (Chart.registry.plugins.get('datalabels') == null) { Chart.register(ChartDataLabels); }
 
       const ctx=document.getElementById('dash-chart').getContext('2d'); if(dashChart) dashChart.destroy();
 
-      // Funções de offset dinâmico por ponto (evita colisão quando valores aproximam)
       const gapOffsetEnv = (ctx)=>{
-        const i = ctx.dataIndex;
-        const env = serieEnv[i] ?? 0;
-        const rec = serieRec[i] ?? 0;
-        const gap = Math.abs(env - rec);
-        // quanto menor o gap, maior o distanciamento entre as etiquetas
-        if (gap < 15) return 40;     // bem próximos
-        if (gap < 30) return 26;     // próximos
-        return 14;                   // distância normal
+        const i = ctx.dataIndex; const env = serieEnv[i] ?? 0; const rec = serieRec[i] ?? 0; const gap = Math.abs(env - rec);
+        if (gap < 15) return 40; if (gap < 30) return 26; return 14;
       };
       const gapOffsetRec = (ctx)=>{
-        const i = ctx.dataIndex;
-        const env = serieEnv[i] ?? 0;
-        const rec = serieRec[i] ?? 0;
-        const gap = Math.abs(env - rec);
-        if (gap < 15) return 58;     // sobe mais ainda
-        if (gap < 30) return 42;
-        return 30;
+        const i = ctx.dataIndex; const env = serieEnv[i] ?? 0; const rec = serieRec[i] ?? 0; const gap = Math.abs(env - rec);
+        if (gap < 15) return 58; if (gap < 30) return 42; return 30;
       };
 
       dashChart=new Chart(ctx,{
@@ -842,60 +809,23 @@
         data:{
           labels:dias,
           datasets:[
-            {
-              label:'Enviados',
-              data:serieEnv,
-              borderColor:'#148CD6',
-              backgroundColor:'rgba(20,140,214,0.10)',
-              tension:0.35, pointRadius:3, pointHoverRadius:4, borderWidth:2,
-              datalabels:{
-                formatter:(v)=> (v==null || v===0) ? '' : v,
-                anchor:'end', align:'top', offset:gapOffsetEnv,
-                backgroundColor:'rgba(255,255,255,0.95)',
-                borderColor:'#148CD6', borderWidth:1, borderRadius:4, padding:3, clip:false, color:'#111', font:{weight:'700', size:11}
-              }
-            },
-            {
-              label:'Recebidos',
-              data:serieRec,
-              borderColor:'#16a34a',
-              backgroundColor:'rgba(22,163,74,0.10)',
-              tension:0.35, pointRadius:3, pointHoverRadius:4, borderWidth:2,
-              datalabels:{
-                formatter:(v)=> (v==null || v===0) ? '' : v,
-                anchor:'end', align:'top', offset:gapOffsetRec,
-                backgroundColor:'rgba(255,255,255,0.95)',
-                borderColor:'#16a34a', borderWidth:1, borderRadius:4, padding:3, clip:false, color:'#111', font:{weight:'700', size:11}
-              }
-            },
-            {
-              label:'Quebra',
-              data:serieQbr,
-              borderColor:'#dc2626',
-              backgroundColor:'rgba(220,38,38,0.10)',
-              tension:0.35, pointRadius:3, pointHoverRadius:4, borderWidth:2,
-              datalabels:{
-                formatter:(v)=> (v==null || v===0) ? '' : v,
-                anchor:'end', align:'bottom', offset:10,
-                backgroundColor:'rgba(255,255,255,0.95)',
-                borderColor:'#dc2626', borderWidth:1, borderRadius:4, padding:3, clip:false, color:'#111', font:{weight:'700', size:11}
-              }
-            }
+            { label:'Enviados', data:serieEnv, borderColor:'#148CD6', backgroundColor:'rgba(20,140,214,0.10)', tension:0.35, pointRadius:3, pointHoverRadius:4, borderWidth:2,
+              datalabels:{ formatter:(v)=> (v==null || v===0) ? '' : v, anchor:'end', align:'top', offset:gapOffsetEnv,
+                backgroundColor:'rgba(255,255,255,0.95)', borderColor:'#148CD6', borderWidth:1, borderRadius:4, padding:3, clip:false, color:'#111', font:{weight:'700', size:11} } },
+            { label:'Recebidos', data:serieRec, borderColor:'#16a34a', backgroundColor:'rgba(22,163,74,0.10)', tension:0.35, pointRadius:3, pointHoverRadius:4, borderWidth:2,
+              datalabels:{ formatter:(v)=> (v==null || v===0) ? '' : v, anchor:'end', align:'top', offset:gapOffsetRec,
+                backgroundColor:'rgba(255,255,255,0.95)', borderColor:'#16a34a', borderWidth:1, borderRadius:4, padding:3, clip:false, color:'#111', font:{weight:'700', size:11} } },
+            { label:'Quebra', data:serieQbr, borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,0.10)', tension:0.35, pointRadius:3, pointHoverRadius:4, borderWidth:2,
+              datalabels:{ formatter:(v)=> (v==null || v===0) ? '' : v, anchor:'end', align:'bottom', offset:10,
+                backgroundColor:'rgba(255,255,255,0.95)', borderColor:'#dc2626', borderWidth:1, borderRadius:4, padding:3, clip:false, color:'#111', font:{weight:'700', size:11} } }
           ]
         },
         options:{
-          responsive:true,
-          maintainAspectRatio:false,
+          responsive:true, maintainAspectRatio:false,
           layout:{ padding:{top:14,right:16,left:8,bottom:10}},
-          plugins:{
-            legend:{position:'top'},
-            tooltip:{ enabled:true }
-          },
+          plugins:{ legend:{position:'top'}, tooltip:{ enabled:true } },
           interaction:{mode:'index',intersect:false},
-          scales:{
-            y:{ beginAtZero:true, suggestedMax, ticks:{ precision:0 } },
-            x:{ ticks:{ autoSkip:true, maxRotation:0 } }
-          }
+          scales:{ y:{ beginAtZero:true, suggestedMax, ticks:{ precision:0 } }, x:{ ticks:{ autoSkip:true, maxRotation:0 } } }
         }
       });
 
@@ -911,6 +841,44 @@
       renderStatusDots(document.getElementById('dash-table'));
     }
     $('dash-atualizar')?.addEventListener('click', loadDashboard);
+
+    /* ======= PESQUISAR (botões restaurados) ======= */
+    $('q-buscar')?.addEventListener('click', async ()=>{
+      const rows = await allDocs({
+        id: $('q-doc').value.trim().toUpperCase(),
+        placa: $('q-placa').value.trim().toUpperCase(),
+        motorista: $('q-motorista').value.trim().toUpperCase()
+      });
+      renderSearch(rows);
+    });
+    $('q-limpar')?.addEventListener('click', ()=>{
+      $('q-doc').value=''; $('q-placa').value=''; $('q-motorista').value='';
+      renderSearch([]);
+    });
+    function renderSearch(rows){
+      const tb=document.querySelector('#q-table tbody'); if(!tb) return;
+      tb.innerHTML='';
+      rows.forEach(d=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=
+          `<td>${d.id}</td>
+           <td>${d.data||''}</td>
+           <td>${d.placa||''}</td>
+           <td>${d.motorista||''}</td>
+           <td>${d.status||''}</td>
+           <td><button class='btn ghost' data-open='${d.id}'><i class="fa-solid fa-pen-to-square"></i> Editar</button></td>`;
+        tb.appendChild(tr);
+      });
+      tb.querySelectorAll('button[data-open]').forEach(b=> b.addEventListener('click', async (e)=>{
+        const id=e.currentTarget.getAttribute('data-open');
+        tabs.editar.btn.click();
+        $('editar-id').value=id;
+        const doc=await getDoc(id); if(!doc){alert('Documento não encontrado.'); return;}
+        editing=doc; editingSnapshot=JSON.parse(JSON.stringify(doc));
+        $('editar-form').classList.remove('hide'); renderEditar(); loadHistory(id);
+      }));
+      renderStatusDots(document.getElementById('q-table'));
+    }
 
     /* Init */
     function ensureDefaultsNovo(){
